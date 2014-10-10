@@ -1,4 +1,4 @@
-//package rental;
+package rental;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

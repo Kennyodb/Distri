@@ -1,4 +1,4 @@
-//package rental;
+package rental;
 
 public class Reservation extends Quote {
 

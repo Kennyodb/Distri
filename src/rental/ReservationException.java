@@ -1,4 +1,4 @@
-//package rental;
+package rental;
 
 public class ReservationException extends Exception {
 

@@ -1,4 +1,4 @@
-//	package rental;
+package rental;
 
 import java.util.Date;
 
