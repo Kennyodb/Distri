@@ -1,48 +1,47 @@
-package rental;
+//	package rental;
 
 import java.util.Date;
 
 public class ReservationConstraints {
-
-	private Date startDate;
-	private Date endDate;
-	private String carType;
-
-	public ReservationConstraints(Date start, Date end, String carType) {
-		setStartDate(start);
-		setEndDate(end);
-		setCarType(carType);
-	}
-
-	public Date getStartDate() {
+    
+    private Date startDate;
+    private Date endDate;
+    private String carType;
+	
+    public ReservationConstraints(Date start, Date end, String carType){
+    	setStartDate(start);
+    	setEndDate(end);
+    	setCarType(carType);
+    }
+    
+    public Date getStartDate() {
 		return startDate;
 	}
-
-	private void setStartDate(Date startDate) {
+    
+    private void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-
-	public Date getEndDate() {
+    
+    public Date getEndDate() {
 		return endDate;
 	}
-
+    
 	private void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
+	
 	public String getCarType() {
 		return carType;
 	}
-
+	
 	private void setCarType(String carType) {
 		this.carType = carType;
 	}
 
 	@Override
 	public String toString() {
-		return String
-				.format("Reservation constraints [from %s until %s, for car type '%s']",
-						getStartDate(), getEndDate(), getCarType());
+            return String.format("Reservation constraints [from %s until %s, for car type '%s']", 
+                    getStartDate(), getEndDate(), getCarType());
 	}
 
 	@Override
@@ -81,5 +80,5 @@ public class ReservationConstraints {
 		} else if (!carType.equals(other.carType))
 			return false;
 		return true;
-	}
+	}   
 }
