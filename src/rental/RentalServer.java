@@ -15,10 +15,11 @@ import java.rmi.server.UnicastRemoteObject;
 public class RentalServer {
 
 	public static void main(String[] args) throws ReservationException, NumberFormatException, IOException {
+		System.setSecurityManager(null);
 		List<Car> cars = loadData("hertz.csv");
 		CarRentalCompany company = new CarRentalCompany("Hertz", cars);
 		try{
-		CarRentalCompany stub = (CarRentalCompany) UnicastRemoteObject.exportObject(company, 0);
+		ICarRentalCompany stub = (ICarRentalCompany) UnicastRemoteObject.exportObject(company, 0);
 		Registry registry = LocateRegistry.getRegistry();
 		registry.rebind("Hertz", company);
 		System.out.println("CarRentalCompany bound...");
