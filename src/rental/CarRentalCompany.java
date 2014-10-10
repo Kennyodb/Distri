@@ -1,6 +1,6 @@
 package rental;
 
-import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany implements Remote{
+public class CarRentalCompany implements ICarRentalCompany {
 
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 	
@@ -139,5 +139,12 @@ public class CarRentalCompany implements Remote{
 	public void cancelReservation(Reservation res) {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
 		getCar(res.getCarId()).removeReservation(res);
+	}
+
+	@Override
+	public List<CarType> getFreeCarTypes(Date from, Date end)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
