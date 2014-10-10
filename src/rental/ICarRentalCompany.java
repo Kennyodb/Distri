@@ -8,12 +8,12 @@ import java.util.List;
 public interface ICarRentalCompany extends Remote {
 	
 	public List<CarType> getFreeCarTypes(Date from, Date end)
-			throws RemoteException;
+			throws RemoteException, ReservationException;
 
 	public Quote createQuote(ReservationConstraints constraints, String client)
-			throws RemoteException;
+			throws RemoteException, ReservationException;
 
 	public Reservation confirmQuote(Quote quote)
-			throws RemoteException;
+			throws RemoteException, ReservationException;
 	
 }
