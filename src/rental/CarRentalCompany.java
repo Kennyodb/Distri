@@ -83,12 +83,16 @@ public class CarRentalCompany implements ICarRentalCompany {
 	}
 
 	public int getNumberOfReservationsForCarType(String carType) {
-
-		
-		
-		return 0;
+		int nb = 0;
+		for(Car car : cars) {
+			for(Reservation res : car.getReservations()) {
+				if(res.getCarType().equals(carType)) {
+					nb++;
+				}
+			}
+		}
+		return nb;
 	}
-	
 	
 	/*********
 	 * CARS *
