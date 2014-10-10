@@ -5,8 +5,16 @@ import java.util.List;
 
 import rental.Quote;
 import rental.Reservation;
+import rental.ICarRentalCompany;
+
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 public class Client extends AbstractScriptedSimpleTest {
+
+	private ICarRentalCompany crc;
 	
 	/********
 	 * MAIN *
@@ -28,7 +36,18 @@ public class Client extends AbstractScriptedSimpleTest {
 	public Client(String scriptFile, String carRentalCompanyName) {
 		super(scriptFile);
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		//throw new UnsupportedOperationException("TODO");
+
+		try {
+			System.setSecurityManager(null);
+
+			Registry registry = LocateRegistry.getRegistry("localhost", "1099");
+			crc = (ICarRentalCompany) registry.lookup(carRentalCompanyName);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -69,6 +88,7 @@ public class Client extends AbstractScriptedSimpleTest {
 			String carType) throws Exception {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("TODO");
+
 	}
 
 	/**
