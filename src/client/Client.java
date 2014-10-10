@@ -3,139 +3,136 @@ package client;
 import java.util.Date;
 import java.util.List;
 
+import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
 import rental.ICarRentalCompany;
+import rental.ReservationConstraints;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 
 public class Client extends AbstractScriptedSimpleTest {
 
 	private ICarRentalCompany crc;
-	
+
 	/********
 	 * MAIN *
 	 ********/
-	
+
 	public static void main(String[] args) throws Exception {
-		
+
 		String carRentalCompanyName = "Hertz";
-		
-		// An example reservation scenario on car rental company 'Hertz' would be...
+
+		// An example reservation scenario on car rental company 'Hertz' would
+		// be...
 		Client client = new Client("simpleTrips", carRentalCompanyName);
 		client.run();
 	}
-	
+
 	/***************
 	 * CONSTRUCTOR *
 	 ***************/
-	
+
 	public Client(String scriptFile, String carRentalCompanyName) {
 		super(scriptFile);
-		// TODO Auto-generated method stub
-		//throw new UnsupportedOperationException("TODO");
-
 		try {
 			System.setSecurityManager(null);
 
-			Registry registry = LocateRegistry.getRegistry("localhost", "1099");
+			Registry registry = LocateRegistry.getRegistry();
 			crc = (ICarRentalCompany) registry.lookup(carRentalCompanyName);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Check which car types are available in the given period
-	 * and print this list of car types.
-	 *
-	 * @param 	start
-	 * 			start time of the period
-	 * @param 	end
-	 * 			end time of the period
-	 * @throws 	Exception
-	 * 			if things go wrong, throw exception
+	 * Check which car types are available in the given period and print this
+	 * list of car types.
+	 * 
+	 * @param start
+	 *            start time of the period
+	 * @param end
+	 *            end time of the period
+	 * @throws Exception
+	 *             if things go wrong, throw exception
 	 */
 	@Override
-	protected void checkForAvailableCarTypes(Date start, Date end) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+	protected void checkForAvailableCarTypes(Date start, Date end)
+			throws Exception {
+		List<CarType> types = crc.getFreeCarTypes(start, end);
+		for (CarType type : types) {
+			System.out.println(type);
+		}
 	}
 
 	/**
 	 * Retrieve a quote for a given car type (tentative reservation).
 	 * 
-	 * @param	clientName 
-	 * 			name of the client 
-	 * @param 	start 
-	 * 			start time for the quote
-	 * @param 	end 
-	 * 			end time for the quote
-	 * @param 	carType 
-	 * 			type of car to be reserved
-	 * @return	the newly created quote
-	 *  
-	 * @throws 	Exception
-	 * 			if things go wrong, throw exception
+	 * @param clientName
+	 *            name of the client
+	 * @param start
+	 *            start time for the quote
+	 * @param end
+	 *            end time for the quote
+	 * @param carType
+	 *            type of car to be reserved
+	 * @return the newly created quote
+	 * 
+	 * @throws Exception
+	 *             if things go wrong, throw exception
 	 */
 	@Override
 	protected Quote createQuote(String clientName, Date start, Date end,
 			String carType) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
-
+		return crc.createQuote(new ReservationConstraints(start, end, carType),
+				clientName);
 	}
 
 	/**
 	 * Confirm the given quote to receive a final reservation of a car.
 	 * 
-	 * @param 	quote 
-	 * 			the quote to be confirmed
-	 * @return	the final reservation of a car
+	 * @param quote
+	 *            the quote to be confirmed
+	 * @return the final reservation of a car
 	 * 
-	 * @throws 	Exception
-	 * 			if things go wrong, throw exception
+	 * @throws Exception
+	 *             if things go wrong, throw exception
 	 */
 	@Override
 	protected Reservation confirmQuote(Quote quote) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		return crc.confirmQuote(quote);
 	}
-	
+
 	/**
 	 * Get all reservations made by the given client.
-	 *
-	 * @param 	clientName
-	 * 			name of the client
-	 * @return	the list of reservations of the given client
 	 * 
-	 * @throws 	Exception
-	 * 			if things go wrong, throw exception
+	 * @param clientName
+	 *            name of the client
+	 * @return the list of reservations of the given client
+	 * 
+	 * @throws Exception
+	 *             if things go wrong, throw exception
 	 */
 	@Override
-	protected List<Reservation> getReservationsBy(String clientName) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+	protected List<Reservation> getReservationsBy(String clientName)
+			throws Exception {
+		return crc.getReservationsBy(clientName);
 	}
 
 	/**
 	 * Get the number of reservations for a particular car type.
 	 * 
-	 * @param 	carType 
-	 * 			name of the car type
-	 * @return 	number of reservations for the given car type
+	 * @param carType
+	 *            name of the car type
+	 * @return number of reservations for the given car type
 	 * 
-	 * @throws 	Exception
-	 * 			if things go wrong, throw exception
+	 * @throws Exception
+	 *             if things go wrong, throw exception
 	 */
 	@Override
-	protected int getNumberOfReservationsForCarType(String carType) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+	protected int getNumberOfReservationsForCarType(String carType)
+			throws Exception {
+		return crc.getNumberOfReservationsForCarType(carType);
 	}
 }

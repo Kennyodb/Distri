@@ -1,6 +1,7 @@
 package rental;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,6 +82,14 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return availableCarTypes;
 	}
 
+	public int getNumberOfReservationsForCarType(String carType) {
+
+		
+		
+		return 0;
+	}
+	
+	
 	/*********
 	 * CARS *
 	 *********/
@@ -164,10 +173,21 @@ public class CarRentalCompany implements ICarRentalCompany {
 		getCar(res.getCarId()).removeReservation(res);
 	}
 
+	public List<Reservation> getReservationsBy(String client) {
+		List<Reservation> list = new ArrayList<>();
+		for(Car car : cars) {
+			for(Reservation res : car.getReservations()) {
+				if(res.getCarRenter().equals(client)) {
+					list.add(res);
+				}
+			}
+		}
+		return list;
+	}
+	
 	@Override
 	public List<CarType> getFreeCarTypes(Date from, Date end)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>(this.getAvailableCarTypes(from, end));
 	}
 }

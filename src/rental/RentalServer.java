@@ -25,7 +25,6 @@ public class RentalServer {
 			registry.rebind("Hertz", stub);
 			System.out.println("CarRentalCompany bound...");
 		} catch (Exception e) {
-			System.out.println("exception " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -60,6 +59,7 @@ public class RentalServer {
 				cars.add(new Car(nextuid++, type));
 			}
 		}
+		in.close();
 
 		return cars;
 	}
