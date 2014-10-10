@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 public class Quote implements Serializable {
 
-    private Date startDate;
+	private static final long serialVersionUID = 2303466133480229680L;
+	private Date startDate;
     private Date endDate;
     private String carRenter;
     private String rentalCompany;

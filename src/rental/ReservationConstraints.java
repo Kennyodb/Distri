@@ -1,10 +1,12 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ReservationConstraints {
+public class ReservationConstraints implements Serializable {
     
-    private Date startDate;
+	private static final long serialVersionUID = -5594330145422239039L;
+	private Date startDate;
     private Date endDate;
     private String carType;
 	
