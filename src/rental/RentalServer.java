@@ -7,12 +7,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 public class RentalServer {
 
-	public static void main(String[] args) throws ReservationException,
-			NumberFormatException, IOException {
+	public static void main(String[] args) throws ReservationException, NumberFormatException, IOException {
 		List<Car> cars = loadData("hertz.csv");
-		new CarRentalCompany("Hertz", cars);
+		CarRentalCompany company = new CarRentalCompany("Hertz", cars);
+		try{
+		CarRentalCompany stub = (CarRentalCompany) UnicastRemoteObject.exportObject(company, 0);
+		Registry registry = LocateRegistry.getRegistry();
+		registry.rebind("Hertz", company);
+		System.out.println("CarRentalCompany bound...");
+		}
+		catch(Exception e)
+		{
+			System.out.println("exception " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public static List<Car> loadData(String datafile)
@@ -21,31 +36,31 @@ public class RentalServer {
 		List<Car> cars = new LinkedList<Car>();
 
 		int nextuid = 0;
-
-		// open file
+		
+		//open file
 		BufferedReader in = new BufferedReader(new FileReader(datafile));
-		// while next line exists
+		//while next line exists
 		while (in.ready()) {
-			// read line
+			//read line
 			String line = in.readLine();
-			// if comment: skip
-			if (line.startsWith("#"))
+			//if comment: skip
+			if(line.startsWith("#"))
 				continue;
-			// tokenize on ,
+			//tokenize on ,
 			StringTokenizer csvReader = new StringTokenizer(line, ",");
-			// create new car type from first 5 fields
+			//create new car type from first 5 fields
 			CarType type = new CarType(csvReader.nextToken(),
 					Integer.parseInt(csvReader.nextToken()),
 					Float.parseFloat(csvReader.nextToken()),
 					Double.parseDouble(csvReader.nextToken()),
 					Boolean.parseBoolean(csvReader.nextToken()));
 			System.out.println(type);
-			// create N new cars with given type, where N is the 5th field
-			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
+			//create N new cars with given type, where N is the 5th field
+			for(int i = Integer.parseInt(csvReader.nextToken());i>0;i--){
 				cars.add(new Car(nextuid++, type));
 			}
 		}
-
+		
 		return cars;
 	}
 }
