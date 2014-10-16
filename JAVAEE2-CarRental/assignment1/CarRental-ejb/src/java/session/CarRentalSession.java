@@ -18,7 +18,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     public CarRentalSession()
     {
-        this.carRenter = "testRenter";
+       this.carRenter = "testRenter";
         this.selectedRentalCompany = (String) this.getAllRentalCompanies().toArray()[0];
         this.quotes = new ArrayList<Quote>();
     }
@@ -31,7 +31,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public Quote  createQuote(ReservationConstraints reservationConstraints)
     {        
-       /* Quote quote = new Quote(carRenter,
+        Quote quote = new Quote(carRenter,
                                 reservationConstraints.getStartDate(),
                                 reservationConstraints.getEndDate(),
                                 selectedRentalCompany,
@@ -40,8 +40,21 @@ public class CarRentalSession implements CarRentalSessionRemote {
          
         this.quotes.add(quote);
         
-        return quote;*/
-        return null;
+        return quote;
+    }
+    
+    @Override
+    public List<Quote> getCurrentQuotes()
+    {
+        return this.quotes;
+    }
+    
+    @Override
+    public boolean confirmQuotes()
+    {
+        this.quotes = new ArrayList<Quote>();
+        
+        return true;
     }
     
 }
