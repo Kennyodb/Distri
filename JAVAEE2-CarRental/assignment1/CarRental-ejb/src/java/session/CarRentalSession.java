@@ -53,7 +53,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
     public boolean confirmQuotes()
     {
         this.quotes = new ArrayList<Quote>();
-        
         return true;
     }
     
