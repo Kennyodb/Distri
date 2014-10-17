@@ -12,9 +12,9 @@ public interface CarRentalSessionRemote {
 
     Set<String> getAllRentalCompanies();
     
-    Quote createQuote(ReservationConstraints reservationContraints);
+    String createQuote(String startDate, String endDate, String carType);
     
-    List<Quote> getCurrentQuotes();
+    List<String> getCurrentQuotes();
     
     boolean confirmQuotes();
 }

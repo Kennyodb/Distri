@@ -48,14 +48,17 @@ public class Main {
         System.out.println("press any key to try to register quote : " + constraint);
         Main.readLine();
         
-        if(session.createQuote(constraint) != null)
-            System.out.println("Quote registered");
+        String result = session.createQuote(constraint.getStartDate().toString(), 
+                            constraint.getEndDate().toString(),
+                            constraint.getCarType());
+        
+        System.out.println("Quote registered as:\n" + result + "\n");
     }
     
     private static void displayCurrentQuotes()
     {
         System.out.println("The current quotes in the system are:");
-        for(Quote q : session.getCurrentQuotes())
+        for(String q : session.getCurrentQuotes())
         {
             System.out.println(q);
         }

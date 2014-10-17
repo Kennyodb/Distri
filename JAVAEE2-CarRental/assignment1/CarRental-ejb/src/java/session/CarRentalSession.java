@@ -1,6 +1,7 @@
 package session;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,16 +13,9 @@ import rental.Quote;
 @Stateful
 public class CarRentalSession implements CarRentalSessionRemote {
     
-    private String selectedRentalCompany;
-    private String carRenter;
-    private List<Quote> quotes;
-    
-    public CarRentalSession()
-    {
-       this.carRenter = "testRenter";
-        this.selectedRentalCompany = (String) this.getAllRentalCompanies().toArray()[0];
-        this.quotes = new ArrayList<Quote>();
-    }
+    private String selectedRentalCompany = "testCompany";
+    private String carRenter = "testRenter";;
+    private List<Quote> quotes = new ArrayList<Quote>();
     
     @Override
     public Set<String> getAllRentalCompanies() {
@@ -29,30 +23,35 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
-    public Quote  createQuote(ReservationConstraints reservationConstraints)
-    {        
+    public String  createQuote(String startDate, String endDate, String carType)
+    {   
         Quote quote = new Quote(carRenter,
-                                reservationConstraints.getStartDate(),
-                                reservationConstraints.getEndDate(),
+                                new Date(),
+                                new Date(),
                                 selectedRentalCompany,
-                                reservationConstraints.getCarType(),
+                                carType,
                                 50);
          
         this.quotes.add(quote);
         
-        return quote;
+        return quote.toString();
     }
     
     @Override
-    public List<Quote> getCurrentQuotes()
+    public List<String> getCurrentQuotes()
     {
-        return this.quotes;
+        List<String> toreturn = new ArrayList<String>();
+        for(Quote q:this.quotes)
+            toreturn.add(q.toString());
+        
+        return toreturn;
     }
     
     @Override
     public boolean confirmQuotes()
     {
         this.quotes = new ArrayList<Quote>();
+        
         return true;
     }
     
