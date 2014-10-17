@@ -6,15 +6,18 @@ import java.io.InputStreamReader;
 import javax.ejb.EJB;
 import session.CarRentalSessionRemote;
 import rental.ReservationConstraints;
-import rental.Quote;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import session.ManagerSessionRemote;
 
-public class Main {
+public class Main extends AbstractScriptedSimpleTripTest{
     
     @EJB
     static CarRentalSessionRemote session;
+    
+    @EJB
+    static ManagerSessionRemote managerSession;
     /**
      * @param args the command line arguments
      */
@@ -28,9 +31,9 @@ public class Main {
             int choice = Integer.parseInt(input);
             switch(choice)
             {
-                case 1:Main.addReservationConstraint(); break;
-                case 2:Main.displayCurrentQuotes(); break;
-                case 3:Main.confirmQuotes();break;
+                case 1:Main.addReservationConstraintMenu(); break;
+                case 2:Main.displayCurrentQuotesMenu(); break;
+                case 3:Main.confirmQuotesMenu();break;
                     
                 default: break;
             }
@@ -41,7 +44,7 @@ public class Main {
         System.out.println("Terminating session...");
     }
     
-    private static void addReservationConstraint()
+    private static void addReservationConstraintMenu()
     {
         // for now a bogus reservation constraint
         ReservationConstraints constraint = new ReservationConstraints(new Date(), new Date(), "bogusCarType");
@@ -55,7 +58,7 @@ public class Main {
         System.out.println("Quote registered as:\n" + result + "\n");
     }
     
-    private static void displayCurrentQuotes()
+    private static void displayCurrentQuotesMenu()
     {
         System.out.println("The current quotes in the system are:");
         for(String q : session.getCurrentQuotes())
@@ -64,7 +67,7 @@ public class Main {
         }
     }
     
-    private static void confirmQuotes()
+    private static void confirmQuotesMenu()
     {
         System.out.println("Press <ENTER> to confirm all current quotes.");
         Main.readLine();
@@ -91,4 +94,52 @@ public class Main {
         
         return line;
     }
+
+    public Main(String scriptFile) {
+        super(scriptFile);
+    }
+    
+// TODO REPLACE
+    @Override
+    protected Object getNewReservationSession(String name) throws Exception {
+        return session;
+    }
+
+// TODO REPLACE
+    @Override
+    protected Object getNewManagerSession(String name, String carRentalName) throws Exception {
+        return managerSession;
+    }
+
+    @Override
+    protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
+        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
+        System.out.println(mSession.getSupportedCarTypes());
+    }
+
+    @Override
+    protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String carRentalName) throws Exception {
+        
+        CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
+        crSession.createQuote(start.toString(), end.toString(), carType);
+        
+    }
+
+    @Override
+    protected void confirmQuotes(Object session, String name) throws Exception {
+        CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
+        crSession.confirmQuotes();
+    }
+
+    @Override
+    protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
+        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
+        return Integer.parseInt(mSession.getNumberOfReservationsForClient(clientName));
+    }
+
+    @Override
+    protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
+        
+        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
+        return Integer.parseInt(mSession.getNumberOfReservationsForCarType(carType));}
 }

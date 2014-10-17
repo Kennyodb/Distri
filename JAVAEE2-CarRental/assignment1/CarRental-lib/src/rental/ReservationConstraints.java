@@ -1,5 +1,6 @@
 package rental;
 
+import java.lang.annotation.Annotation;
 import java.util.Date;
 
 public class ReservationConstraints {
@@ -80,8 +81,5 @@ public class ReservationConstraints {
 		} else if (!carType.equals(other.carType))
 			return false;
 		return true;
-	}
-    
-	
-    
+	}  
 }
