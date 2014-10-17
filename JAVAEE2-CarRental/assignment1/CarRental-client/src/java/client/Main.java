@@ -24,6 +24,13 @@ public class Main extends AbstractScriptedSimpleTripTest{
     public static void main(String[] args) {
         System.out.println("found rental companies: "+session.getAllRentalCompanies());
         
+        System.out.println(":::::::::::::::/n:::Starting to run/n::::::::::::::::::::");
+        try {
+            (new Main("simpleTrips")).run();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         Main.displayMainMenu();
         String input = Main.readLine();
         while(!input.toLowerCase().startsWith("q"))
@@ -113,8 +120,8 @@ public class Main extends AbstractScriptedSimpleTripTest{
 
     @Override
     protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
-        System.out.println(mSession.getSupportedCarTypes());
+        CarRentalSessionRemote crSession = (CarRentalSessionRemote)session;
+       // System.out.println(crSession.);
     }
 
     @Override
