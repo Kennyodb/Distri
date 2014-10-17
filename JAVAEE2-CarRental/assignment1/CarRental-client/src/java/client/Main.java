@@ -23,13 +23,13 @@ public class Main extends AbstractScriptedSimpleTripTest{
      */
     public static void main(String[] args) {
         System.out.println("found rental companies: "+session.getAllRentalCompanies());
-        
-        System.out.println(":::::::::::::::/n:::Starting to run/n::::::::::::::::::::");
+        /*
+       System.out.println(":::::::::::::::/n:::Starting to run/n::::::::::::::::::::");
         try {
             (new Main("simpleTrips")).run();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
         
         Main.displayMainMenu();
         String input = Main.readLine();
@@ -120,33 +120,46 @@ public class Main extends AbstractScriptedSimpleTripTest{
 
     @Override
     protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-        CarRentalSessionRemote crSession = (CarRentalSessionRemote)session;
-       // System.out.println(crSession.);
+        ManagerSessionRemote mSession;
+        try {
+        mSession = (ManagerSessionRemote)session;
+        for(String s:mSession.getSupportedCarTypes())System.out.println();
+        }catch(Exception e){e.printStackTrace();}
     }
 
     @Override
     protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String carRentalName) throws Exception {
         
+        try{
         CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
         crSession.createQuote(start.toString(), end.toString(), carType);
+        }catch(Exception e){e.printStackTrace();}
         
     }
 
     @Override
     protected void confirmQuotes(Object session, String name) throws Exception {
+        try {
         CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
         crSession.confirmQuotes();
+        }catch(Exception e){e.printStackTrace();}
     }
 
     @Override
     protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
+        try{
         ManagerSessionRemote mSession = (ManagerSessionRemote)session;
         return Integer.parseInt(mSession.getNumberOfReservationsForClient(clientName));
+        }catch(Exception e){e.printStackTrace();}
+        return 0;
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
-        
+        try {
         ManagerSessionRemote mSession = (ManagerSessionRemote)session;
-        return Integer.parseInt(mSession.getNumberOfReservationsForCarType(carType));}
+        return Integer.parseInt(mSession.getNumberOfReservationsForCarType(carType));
+        }catch(Exception e){e.printStackTrace();}
+        return 0;
+    }
 }
