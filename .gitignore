@@ -8,5 +8,15 @@
 *.war
 *.ear
 
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/JAVAEE2-CarRental/assignment1/CarRental-lib/dist/
+/JAVAEE2-CarRental/assignment1/CarRental-lib/build/
+/JAVAEE2-CarRental/assignment1/CarRental-lib/nbproject/private/
+/JAVAEE2-CarRental/assignment1/CarRental-client/dist/
+/JAVAEE2-CarRental/assignment1/CarRental-client/build/
+/JAVAEE2-CarRental/assignment1/CarRental-client/nbproject/
+/JAVAEE2-CarRental/assignment1/CarRental-ejb/dist/
+/JAVAEE2-CarRental/assignment1/CarRental/gfdeploy/
+/JAVAEE2-CarRental/assignment1/CarRental/nbproject/private/
