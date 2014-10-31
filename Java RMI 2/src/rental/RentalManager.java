@@ -20,11 +20,10 @@ public class RentalManager implements IRentalManager
 	
 	@Override
 	public Session getNewSession(String type) {
-		// TODO Auto-generated method stub
-		if(type.equalsIgnoreCase("manager") == true)
+		if(type.equalsIgnoreCase("manager"))
 			return new ManagerSession(this);
 		
-		if(type.equalsIgnoreCase("reservation") == true)
+		if(type.equalsIgnoreCase("reservation"))
 			return new ReservationSession(this);
 		
 		return null;
@@ -40,7 +39,7 @@ public class RentalManager implements IRentalManager
 			Set<CarType> availableTypes = c.getAvailableCarTypes(start, end);
 			for(CarType type : availableTypes)
 			{
-				if(toreturn.contains(type.getName()) == false)
+				if(!toreturn.contains(type.getName()))
 					toreturn.add(type.getName());
 			}
 		}
@@ -68,7 +67,7 @@ public class RentalManager implements IRentalManager
 				return c;
 		}
 	
-		return null;		
+		throw new IllegalArgumentException("No company with name: " + name);		
 	}
 	
 	/*******************TODO************************/

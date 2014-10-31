@@ -10,7 +10,7 @@ public abstract class Session
 	
 	public Session(IRentalManager iRentalManager)
 	{
-		this.id = this.nextUniqueID();
+		this.id = nextUniqueID();
 		this.active = false;
 		this.iRentalManager = iRentalManager;
 	}
@@ -36,7 +36,7 @@ public abstract class Session
 		this.active = false;
 	}
 	
-	private static int nextUniqueID()
+	private static synchronized int nextUniqueID()
 	{
 		return Session.nextUID++;
 	}

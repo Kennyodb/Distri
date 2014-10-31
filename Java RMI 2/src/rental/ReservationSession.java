@@ -1,6 +1,5 @@
 package rental;
 
-import java.util.Date;
 import java.util.List;
 
 public class ReservationSession extends Session
