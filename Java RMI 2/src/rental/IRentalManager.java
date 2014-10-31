@@ -3,19 +3,20 @@ package rental;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 
 public interface IRentalManager extends Remote
 {
 	public Session getNewSession(String type);
 	
-	public List<String> getAvailableCarTypes();
+	public List<String> getAvailableCarTypes(Date start, Date end);
 	
 	public List<String> getAvailableRentalCompanies();
 	
-	public Quote getCheapestCarQuoteForConstraint(ReservationConstraints constraint);
+	public Quote getCheapestCarQuoteForConstraint(ReservationConstraints constraints);
 	
-	public void createQuoteForSession(Quote quote, int sessionID);
+	public Quote createQuoteForSession(ReservationConstraints constraints, int sessionID);
 	
 	public List<Quote> getCurrentQuotesForSession(int sessionID);
 	

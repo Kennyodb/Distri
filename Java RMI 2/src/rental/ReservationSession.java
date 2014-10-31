@@ -1,5 +1,6 @@
 package rental;
 
+import java.util.Date;
 import java.util.List;
 
 public class ReservationSession extends Session
@@ -9,9 +10,9 @@ public class ReservationSession extends Session
 		super(iRentalManager);
 	}
 	
-	public List<String> getAvailableCarTypes()
+	public List<String> getAvailableCarTypes(Date start, Date end)
 	{
-		return this.iRentalManager.getAvailableCarTypes();
+		return this.iRentalManager.getAvailableCarTypes(start, end);
 	}
 	
 	public String getCheapestCarTypeForConstraint(ReservationConstraints constraint)
@@ -25,9 +26,9 @@ public class ReservationSession extends Session
 		return this.getCheapestCarQuoteForConstraint(constraint);
 	}
 	
-	public void createQuote(Quote quote)
+	public Quote createQuote(ReservationConstraints constraints)
 	{
-		this.iRentalManager.createQuoteForSession(quote, this.getID());
+		return this.iRentalManager.createQuoteForSession(constraints, this.getID());
 	}
 	
 	public List<Quote> getCurrentQuotes()

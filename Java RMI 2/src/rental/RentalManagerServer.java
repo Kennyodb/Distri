@@ -35,7 +35,7 @@ public class RentalManagerServer {
 			IRentalManager stub = (IRentalManager) UnicastRemoteObject
 					.exportObject(manager, 0);
 			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind("Manager", stub);
+			registry.rebind("manager", stub);
 			System.out.println("Manager bound...");
 		} catch (Exception e) {
 			e.printStackTrace();
