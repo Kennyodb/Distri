@@ -1,178 +1,94 @@
 package rental;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RentalManager implements IRentalManager
-{
-	Dictionary<String, CarRentalCompany> companies;
-	Dictionary<Integer, List<Quote>> sessionQuotes;
-	
-	public RentalManager()
-	{
-		this.companies = new Hashtable<String, CarRentalCompany>();
-		this.sessionQuotes = new Hashtable<Integer, List<Quote>>();
+public class RentalManager implements IRentalManager {
+
+	Set<CarRentalCompany> companies;
+
+	public RentalManager() {
+		this.companies = new HashSet<>();
 	}
-	
+
 	@Override
 	public Session getNewSession(String type) {
-		if(type.equalsIgnoreCase("manager"))
+		if (type.equalsIgnoreCase("manager"))
 			return new ManagerSession(this);
-		
-		if(type.equalsIgnoreCase("reservation"))
+
+		if (type.equalsIgnoreCase("reservation"))
 			return new ReservationSession(this);
-		
+
 		return null;
 	}
 
 	@Override
-	public List<String> getAvailableCarTypes(Date start, Date end) {
-		List<String> toreturn = new ArrayList<String>();
-		
-		while(this.companies.elements().hasMoreElements())
-		{
-			CarRentalCompany c = this.companies.elements().nextElement();
-			Set<CarType> availableTypes = c.getAvailableCarTypes(start, end);
-			for(CarType type : availableTypes)
-			{
-				if(!toreturn.contains(type.getName()))
-					toreturn.add(type.getName());
+	public List<String> getRentalCompanies() {
+		List<String> result = new ArrayList<>();
+		for (CarRentalCompany company : companies) {
+			result.add(company.getName());
+		}
+		return result;
+	}
+
+	private CarRentalCompany getCarRentalCompany(String name) {
+		for (CarRentalCompany company : companies) {
+			if (company.getName().equals(name)) {
+				return company;
 			}
 		}
-		
-		return toreturn;
+		throw new IllegalArgumentException("No company with name: " + name);
 	}
 
-	@Override
-	public List<String> getAvailableRentalCompanies() {
-		List<String> toreturn = new ArrayList<String>();
-		
-		while(this.companies.elements().hasMoreElements())
-			toreturn.add(this.companies.elements().nextElement().getName());
-		
-		return toreturn;
-	}
-	
-	@Override
-	public CarRentalCompany getCarRentalCompany(String name)
-	{		
-		while(this.companies.elements().hasMoreElements())
-		{
-			CarRentalCompany c = this.companies.elements().nextElement();
-			if(c.getName().equalsIgnoreCase(name))
-				return c;
-		}
-	
-		throw new IllegalArgumentException("No company with name: " + name);		
-	}
-	
-	/*******************TODO************************/
-
-	@Override
-	public Quote getCheapestCarQuoteForConstraint(
-			ReservationConstraints constraints) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	private void addQuoteForSession(Quote quote, int sessionID)
-	{
-		List<Quote> quotesForSession = this.sessionQuotes.get(sessionID);
-		if(quotesForSession == null)
-		{
-			quotesForSession = new ArrayList<Quote>();
-			this.sessionQuotes.put(sessionID, quotesForSession);
-		}
-		quotesForSession.add(quote);
+	public Reservation confirmQuote(String companyName, Quote q)
+			throws ReservationException {
+		CarRentalCompany company = this.getCarRentalCompany(companyName);
+		return company.confirmQuote(q);
 	}
 
-	@Override
-	public Quote createQuoteForSession(ReservationConstraints constraints, int sessionID) {
-		// TODO Auto-generated method stub
-		Quote quote = this.getCheapestCarQuoteForConstraint(constraints);
-		this.addQuoteForSession(quote, sessionID);
-		return quote;
-	}
-
-	@Override
-	public List<Quote> getCurrentQuotesForSession(int sessionID) {
-		// TODO Auto-generated method stub
-		return this.sessionQuotes.get(sessionID);
-	}
-	
-	/***** TODO: CONCURRENCY CHECKS EN ROLLBACK STUFF ***********************/
-	
-	private boolean confirmQuote(Quote q)
-	{
-		CarRentalCompany company = this.companies.get(q.getRentalCompany());
-		try {
-			company.confirmQuote(q);
-		} catch (ReservationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-	@Override
-	public boolean confirmQuotesForSession(int sessionID) {
-		// TODO Auto-generated method stub
-		List<Quote> quotes = this.getCurrentQuotesForSession(sessionID);
-		for(Quote quote : quotes)
-		{
-			if(this.confirmQuote(quote) == false)
-			{
-				return false;
-			}
-		}
-		return true;
+	public void cancelReservation(String companyName, Reservation res) {
+		this.getCarRentalCompany(companyName).cancelReservation(res);
 	}
 
 	@Override
 	public void registerCompany(CarRentalCompany crc) {
-		// TODO Auto-generated method stub
-		this.companies.put(crc.getName(), crc);		
+		this.companies.add(crc);
 	}
 
 	@Override
 	public void unregisterCompany(CarRentalCompany crc) {
-		// TODO Auto-generated method stub
 		this.companies.remove(crc);
 	}
 
 	@Override
 	public int getNumberOfReservationsForCarType(String type) {
-		
 		int nReservations = 0;
-		
-		while(this.companies.elements().hasMoreElements())
-		{
-			CarRentalCompany c = this.companies.elements().nextElement();
-			
+		for (CarRentalCompany c : companies) {
 			c.getNumberOfReservationsForCarType(type);
 		}
-		
 		return nReservations;
 	}
 
 	@Override
-	public String getTopCustomer(){
-		
+	public String getTopCustomer() {
 		String topCustomer = "";
-		
-		while(this.companies.elements().hasMoreElements())
-		{
-			CarRentalCompany c = this.companies.elements().nextElement();
+		for (CarRentalCompany crc : companies) {
+			// TODO
 		}
-		
 		return topCustomer;
 	}
-	
+
+	@Override
+	public List<String> getAvailableCarTypes(Date start, Date end) {
+		Set<String> available = new HashSet<>();
+		for(CarRentalCompany company : companies) {
+			for(CarType type : company.getAvailableCarTypes(start, end)) {
+				available.add(type.getName());
+			}
+		}
+		return new ArrayList<>(available);
+	}
 }
