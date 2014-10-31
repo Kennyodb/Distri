@@ -1,5 +1,8 @@
 package rental;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
@@ -136,12 +139,31 @@ public class RentalManager implements IRentalManager
 	public void registerCompany(CarRentalCompany crc) {
 		// TODO Auto-generated method stub
 		this.companies.put(crc.getName(), crc);
+
+		try {
+			ICarRentalCompany stub = (ICarRentalCompany) UnicastRemoteObject
+					.exportObject(crc, 0);
+			Registry registry = LocateRegistry.getRegistry();
+			registry.rebind(crc.getName(), stub);
+			System.out.println("Car Rental Company: " + crc.getName() + " bound.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
 	public void unregisterCompany(CarRentalCompany crc) {
 		// TODO Auto-generated method stub
 		this.companies.remove(crc);
+
+		try {
+			Registry registry = LocateRegistry.getRegistry();
+			registry.unbind(crc.getName());
+			System.out.println("Car Rental Company: " + crc.getName() + " unbound.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
