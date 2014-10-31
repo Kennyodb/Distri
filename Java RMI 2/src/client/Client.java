@@ -16,8 +16,6 @@ import java.rmi.registry.Registry;
 public class Client<ReservationSession, ManagerSession> extends AbstractScriptedTripTest {
 
 	private IRentalManager manager;
-	private ManagerSession managerSession;
-	private ReservationSession reservationSession;
 
 	/********
 	 * MAIN *
@@ -29,7 +27,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractScripted
 
 		// An example reservation scenario on car rental company 'Hertz' would
 		// be...
-		ReservationClient client = new ReservationClient("simpleTrips", "manager");
+		Client client = new Client("simpleTrips", "manager");
 		client.run();
 	}
 
@@ -44,8 +42,6 @@ public class Client<ReservationSession, ManagerSession> extends AbstractScripted
 
 			Registry registry = LocateRegistry.getRegistry();
 			manager = (IRentalManager) registry.lookup(managerName);
-			managerSession = (ManagerSession)manager.getNewSession("manager");
-			reservationSession = (ReservationSession)manager.getNewSession("reservation");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,7 +60,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractScripted
 	@Override
 	protected Object getNewReservationSession(String name) throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		return manager.getNewSession("reservation");;
 	}
 
 	/**
@@ -82,7 +78,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractScripted
 	@Override
 	protected Object getNewManagerSession(String name) throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		return manager.getNewSession("manager");;
 	}
 
 	/**
