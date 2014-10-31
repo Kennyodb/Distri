@@ -58,6 +58,19 @@ public class RentalManager implements IRentalManager
 		return toreturn;
 	}
 	
+	@Override
+	public CarRentalCompany getCarRentalCompany(String name)
+	{		
+		while(this.companies.elements().hasMoreElements())
+		{
+			CarRentalCompany c = this.companies.elements().nextElement();
+			if(c.getName().equalsIgnoreCase(name))
+				return c;
+		}
+	
+		return null;		
+	}
+	
 	/*******************TODO************************/
 
 	@Override

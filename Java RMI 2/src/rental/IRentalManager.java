@@ -14,6 +14,8 @@ public interface IRentalManager extends Remote
 	
 	public List<String> getAvailableRentalCompanies();
 	
+	public CarRentalCompany getCarRentalCompany(String name);
+	
 	public Quote getCheapestCarQuoteForConstraint(ReservationConstraints constraints);
 	
 	public Quote createQuoteForSession(ReservationConstraints constraints, int sessionID);

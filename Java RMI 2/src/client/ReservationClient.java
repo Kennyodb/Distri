@@ -2,7 +2,9 @@ package client;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import rental.CarRentalCompany;
 import rental.CarType;
 import rental.IRentalManager;
 import rental.Quote;
@@ -63,10 +65,17 @@ public class ReservationClient extends AbstractScriptedSimpleTest {
 	@Override
 	protected void checkForAvailableCarTypes(Date start, Date end)
 			throws Exception {
-		List<String> types = session.getAvailableCarTypes(start, end);
-		for (String type : types) {
+		if(this.session.getAvailableCarRentalCompanies().size() == 0)
+		{
+			throw new Exception("no companies registered");
+		}
+		
+		CarRentalCompany c = this.session.getCarRentalCompany(this.session.getAvailableCarRentalCompanies().get(0));
+		Set<CarType> types = c.getAvailableCarTypes(start, end);
+		for (CarType type : types) {
 			System.out.println(type);
 		}
+				
 	}
 
 	/**
