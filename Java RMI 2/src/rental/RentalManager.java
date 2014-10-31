@@ -15,12 +15,12 @@ public class RentalManager implements IRentalManager {
 	}
 
 	@Override
-	public Session getNewSession(String type) {
+	public Session getNewSession(String type, String username) { // String-based
 		if (type.equalsIgnoreCase("manager"))
-			return new ManagerSession(this);
+			return new ManagerSession(this, username);
 
 		if (type.equalsIgnoreCase("reservation"))
-			return new ReservationSession(this);
+			return new ReservationSession(this, username);
 
 		return null;
 	}
@@ -64,28 +64,25 @@ public class RentalManager implements IRentalManager {
 	}
 
 	@Override
-	public int getNumberOfReservationsForCarType(String type) {
-		int nReservations = 0;
-		for (CarRentalCompany c : companies) {
-			c.getNumberOfReservationsForCarType(type);
-		}
-		return nReservations;
+	public int getNumberOfReservationsForCarType(String companyName, String type) {
+		return getCarRentalCompany(companyName)
+				.getNumberOfReservationsForCarType(type);
 	}
 
 	@Override
-	public String getTopCustomer() {
-		String topCustomer = "";
-		for (CarRentalCompany crc : companies) {
-			// TODO
+	public Set<String> getTopCustomers() {
+		Set<String> result = new HashSet<>();
+		for (CarRentalCompany company : companies) {
+			result.add(company.getTopCustomer());
 		}
-		return topCustomer;
+		return result;
 	}
 
 	@Override
 	public List<String> getAvailableCarTypes(Date start, Date end) {
 		Set<String> available = new HashSet<>();
-		for(CarRentalCompany company : companies) {
-			for(CarType type : company.getAvailableCarTypes(start, end)) {
+		for (CarRentalCompany company : companies) {
+			for (CarType type : company.getAvailableCarTypes(start, end)) {
 				available.add(type.getName());
 			}
 		}

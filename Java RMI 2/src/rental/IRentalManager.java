@@ -3,9 +3,11 @@ package rental;
 import java.rmi.Remote;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface IRentalManager extends Remote {
-	public Session getNewSession(String type);
+
+	public Session getNewSession(String type, String username);
 
 	public List<String> getAvailableCarTypes(Date start, Date end);
 
@@ -30,7 +32,7 @@ public interface IRentalManager extends Remote {
 
 	public void unregisterCompany(CarRentalCompany crc);
 
-	public int getNumberOfReservationsForCarType(String type);
+	public int getNumberOfReservationsForCarType(String companyName, String type);
 
-	public String getTopCustomer();
+	public Set<String> getTopCustomers();
 }

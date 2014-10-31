@@ -1,43 +1,42 @@
 package rental;
 
-public abstract class Session
-{
+public abstract class Session {
+	
 	private int id;
+	private String username;
 	private boolean active;
 	protected IRentalManager iRentalManager;
-	
+
 	private static int nextUID = 0;
-	
-	public Session(IRentalManager iRentalManager)
-	{
+
+	public Session(IRentalManager iRentalManager, String username) {
 		this.id = nextUniqueID();
+		this.username = username;
 		this.active = false;
 		this.iRentalManager = iRentalManager;
 	}
-	
-	public int getID()
-	{
+
+	public int getID() {
 		return this.id;
 	}
+
+	public String getUsername() {
+		return username;
+	}
 	
-	
-	public boolean isActive()
-	{
+	public boolean isActive() {
 		return this.active;
 	}
-	
-	public void start()
-	{
+
+	public void start() {
 		this.active = true;
 	}
-	
-	public void end()
-	{
+
+	public void end() {
 		this.active = false;
 	}
-	
-	private static synchronized int nextUniqueID()
-	{
+
+	private static synchronized int nextUniqueID() {
 		return Session.nextUID++;
 	}
 }

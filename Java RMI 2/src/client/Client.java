@@ -19,10 +19,6 @@ public class Client extends
 
 	private IRentalManager manager;
 
-	/********
-	 * MAIN *
-	 ********/
-
 	public static void main(String[] args) throws Exception {
 
 		String rentalManagerName = "Manager";
@@ -32,10 +28,6 @@ public class Client extends
 		Client client = new Client("simpleTrips", rentalManagerName);
 		client.run();
 	}
-
-	/***************
-	 * CONSTRUCTOR *
-	 ***************/
 
 	public Client(String scriptFile, String managerName) {
 		super(scriptFile);
@@ -52,26 +44,27 @@ public class Client extends
 	@Override
 	protected ReservationSession getNewReservationSession(String name)
 			throws Exception {
-		return (ReservationSession) manager.getNewSession("reservation");
+		return (ReservationSession) manager.getNewSession("reservation", name);
 	}
 
 	@Override
 	protected ManagerSession getNewManagerSession(String name) throws Exception {
-		return (ManagerSession) manager.getNewSession("manager");
+		return (ManagerSession) manager.getNewSession("manager", name);
 	}
 
 	@Override
 	protected void checkForAvailableCarTypes(ReservationSession session,
 			Date start, Date end) throws Exception {
-		// TODO Auto-generated method stub
-		// printen of wat?
+		// TODO moet dit geprint worden?
+		for (String type : session.getAvailableCarTypes(start, end)) {
+			System.out.println(type);
+		}
 	}
 
 	@Override
 	protected String getCheapestCarType(ReservationSession session, Date start,
 			Date end) throws Exception {
-		// TODO
-		return null;
+		return session.getCheapesCarType(start, end);
 	}
 
 	@Override
@@ -90,28 +83,24 @@ public class Client extends
 	@Override
 	protected int getNumberOfReservationsBy(ManagerSession ms, String clientName)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return ms.getNumberOfReservationsBy(clientName);
 	}
 
 	@Override
 	protected Set<String> getBestClients(ManagerSession ms) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return ms.getTopCustomers();
 	}
 
 	@Override
 	protected int getNumberOfReservationsForCarType(ManagerSession ms,
 			String carRentalCompanyName, String carType) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return ms.getNumberOfReservationsForCarType(carRentalCompanyName,
+				carType);
 	}
 
 	@Override
 	protected CarType getMostPopularCarTypeIn(ManagerSession ms,
 			String carRentalCompanyName) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return ms.getMostPopularCarTypeIn(carRentalCompanyName);
 	}
-
 }

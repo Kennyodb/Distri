@@ -3,6 +3,7 @@ package rental;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 public class CarRentalCompany implements Serializable {
 
 	private static final long serialVersionUID = -5594330145422239039L;
-	
+
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class
 			.getName());
 
@@ -86,16 +87,16 @@ public class CarRentalCompany implements Serializable {
 
 	public int getNumberOfReservationsForCarType(String carType) {
 		int nb = 0;
-		for(Car car : cars) {
-			for(Reservation res : car.getReservations()) {
-				if(res.getCarType().equals(carType)) {
+		for (Car car : cars) {
+			for (Reservation res : car.getReservations()) {
+				if (res.getCarType().equals(carType)) {
 					nb++;
 				}
 			}
 		}
 		return nb;
 	}
-	
+
 	/*********
 	 * CARS *
 	 *********/
@@ -154,7 +155,8 @@ public class CarRentalCompany implements Serializable {
 						/ (1000 * 60 * 60 * 24D));
 	}
 
-	public Reservation confirmQuote(Quote quote) throws ReservationException {
+	public synchronized Reservation confirmQuote(Quote quote)
+			throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[] { name,
 				quote.toString() });
 		List<Car> availableCars = getAvailableCars(quote.getCarType(),
@@ -181,59 +183,78 @@ public class CarRentalCompany implements Serializable {
 
 	public List<Reservation> getReservationsBy(String client) {
 		List<Reservation> list = new ArrayList<>();
-		for(Car car : cars) {
-			for(Reservation res : car.getReservations()) {
-				if(res.getCarRenter().equals(client)) {
+		for (Car car : cars) {
+			for (Reservation res : car.getReservations()) {
+				if (res.getCarRenter().equals(client)) {
 					list.add(res);
 				}
 			}
 		}
 		return list;
 	}
-	
+
+	public String getTopCustomer() { // inefficient
+		List<String> list = new ArrayList<>();
+		for (Car car : cars) {
+			for (Reservation res : car.getReservations()) {
+				list.add(res.getCarRenter());
+			}
+		}
+
+		String result = null;
+		int nbReservations = -1;
+		for (String client : list) {
+			int frequency = Collections.frequency(list, client);
+			if (frequency > nbReservations) {
+				result = client;
+				nbReservations = frequency;
+			}
+		}
+		return result;
+	}
+
 	public List<CarType> getFreeCarTypes(Date from, Date end)
-			/*throws RemoteException*/ {
+	/* throws RemoteException */{
 		return new ArrayList<>(this.getAvailableCarTypes(from, end));
 	}
-    
-    /*************
-     * TO STRING *
-     *************/
-	private String carsAsString()
-	{
-		String toret = "";
-		
-		for(Car c : this.cars)
-			toret += c.toString() + ", ";
-		
-		if(this.cars.size() > 0)
-			toret = toret.substring(0, toret.length() - 2);
-		
-		return toret;
-	}
-	
-	private String carTypesAsString()
-	{
-		String toret = "";
-		
-		for(CarType t : this.getAllCarTypes())
-			toret += t.toString() + ", ";
-		
-		if(this.getAllCarTypes().size() > 0)
-			toret = toret.substring(0, toret.length() - 2);
-		
-		return toret;
-	}
-    
-    @Override
-    public String toString() {
-    	return String.format("Car Rental Company: %s\n\nsupported cartypes\n----------------\n%s\n\navailable cars\n--------------\n%s", 
-    			this.name, this.carTypesAsString(), this.carsAsString());
-    }
 
-    /***************
-     * HASHCODE    *
-     **************/
+	/*************
+	 * TO STRING *
+	 *************/
+	private String carsAsString() {
+		String toret = "";
+
+		for (Car c : this.cars)
+			toret += c.toString() + ", ";
+
+		if (this.cars.size() > 0)
+			toret = toret.substring(0, toret.length() - 2);
+
+		return toret;
+	}
+
+	private String carTypesAsString() {
+		String toret = "";
+
+		for (CarType t : this.getAllCarTypes())
+			toret += t.toString() + ", ";
+
+		if (this.getAllCarTypes().size() > 0)
+			toret = toret.substring(0, toret.length() - 2);
+
+		return toret;
+	}
+
+	@Override
+	public String toString() {
+		return String
+				.format("Car Rental Company: %s\n\nsupported cartypes\n----------------\n%s\n\navailable cars\n--------------\n%s",
+						this.name, this.carTypesAsString(), this.carsAsString());
+	}
+
+	/***************
+	 * HASHCODE *
+	 **************/
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -242,9 +263,9 @@ public class CarRentalCompany implements Serializable {
 		return result;
 	}
 
-    /***************
-     * EQUALS      *
-     **************/
+	/***************
+	 * EQUALS *
+	 **************/
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -13,8 +13,8 @@ public class ReservationSession extends Session {
 
 	Map<String, Set<Quote>> quotes; // maps crc name to quotes
 
-	public ReservationSession(IRentalManager iRentalManager) {
-		super(iRentalManager);
+	public ReservationSession(IRentalManager iRentalManager, String username) {
+		super(iRentalManager, username);
 		quotes = new HashMap<>();
 	}
 
@@ -26,6 +26,10 @@ public class ReservationSession extends Session {
 		return iRentalManager.getRentalCompanies();
 	}
 
+	public String getCheapesCarType(Date start, Date end) {
+		return null; //TODO
+	}
+	
 	public Quote getCheapestCarQuoteForConstraint(
 			ReservationConstraints constraint) {
 		// TODO
