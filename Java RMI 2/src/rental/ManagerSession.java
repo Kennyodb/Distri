@@ -25,13 +25,10 @@ public class ManagerSession extends Session {
 	}
 
 	public int getNumberOfReservationsBy(String clientName) {
-		// TODO Auto-generated method stub
-		return 0;
+		return 0; //TODO
 	}
 
 	public CarType getMostPopularCarTypeIn(String carRentalCompanyName) {
-		// TODO Auto-generated method stub
-		return null;
+		return null; //TODO
 	}
-
 }

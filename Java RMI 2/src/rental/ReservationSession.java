@@ -27,13 +27,12 @@ public class ReservationSession extends Session {
 	}
 
 	public String getCheapesCarType(Date start, Date end) {
-		return null; //TODO
+		return null; // TODO
 	}
-	
+
 	public Quote getCheapestCarQuoteForConstraint(
 			ReservationConstraints constraint) {
-		// TODO
-		return null;
+		return null;// TODO
 	}
 
 	public Quote createQuote(String company, ReservationConstraints constraints) {
@@ -88,7 +87,7 @@ public class ReservationSession extends Session {
 				}
 			}
 		}
-		
+
 		List<Reservation> result = new ArrayList<>();
 		for (Entry<String, Set<Reservation>> entry : confirmed.entrySet()) {
 			result.addAll(entry.getValue());

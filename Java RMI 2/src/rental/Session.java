@@ -1,6 +1,8 @@
 package rental;
 
-public abstract class Session {
+import java.io.Serializable;
+
+public abstract class Session implements Serializable {
 	
 	private int id;
 	private String username;
