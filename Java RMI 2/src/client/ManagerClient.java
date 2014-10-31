@@ -3,20 +3,18 @@ package client;
 import java.util.Date;
 import java.util.List;
 
-import rental.CarType;
 import rental.IRentalManager;
+import rental.ManagerSession;
 import rental.Quote;
 import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.ReservationSession;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class ReservationClient extends AbstractScriptedSimpleTest {
+public class ManagerClient extends AbstractScriptedSimpleTest {
 
 	private IRentalManager manager;
-	private ReservationSession session;
+	private ManagerSession session;
 
 	/********
 	 * MAIN *
@@ -36,14 +34,14 @@ public class ReservationClient extends AbstractScriptedSimpleTest {
 	 * CONSTRUCTOR *
 	 ***************/
 
-	public ReservationClient(String scriptFile, String managerName) {
+	public ManagerClient(String scriptFile, String managerName) {
 		super(scriptFile);
 		try {
 			System.setSecurityManager(null);
 
 			Registry registry = LocateRegistry.getRegistry();
 			manager = (IRentalManager) registry.lookup(managerName);
-			session = (ReservationSession)manager.getNewSession("reservation");
+			session = (ManagerSession)manager.getNewSession("manager");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -63,10 +61,10 @@ public class ReservationClient extends AbstractScriptedSimpleTest {
 	@Override
 	protected void checkForAvailableCarTypes(Date start, Date end)
 			throws Exception {
-		List<String> types = session.getAvailableCarTypes(start, end);
+		/*List<String> types = session.getAvailableCarTypes(start, end);
 		for (String type : types) {
 			System.out.println(type);
-		}
+		}*/
 	}
 
 	/**
@@ -88,7 +86,7 @@ public class ReservationClient extends AbstractScriptedSimpleTest {
 	@Override
 	protected Quote createQuote(String clientName, Date start, Date end,
 			String carType) throws Exception {
-		return this.session.createQuote(new ReservationConstraints(start, end, carType));
+		return null;//this.session.createQuote(new ReservationConstraints(start, end, carType));
 	}
 
 	/**
@@ -137,6 +135,6 @@ public class ReservationClient extends AbstractScriptedSimpleTest {
 	@Override
 	protected int getNumberOfReservationsForCarType(String carType)
 			throws Exception {
-		return 0;//getNumberOfReservationsForCarType(carType);
+		return this.session.getNumberOfReservationsForCarType(carType);
 	}
 }
