@@ -138,32 +138,13 @@ public class RentalManager implements IRentalManager
 	@Override
 	public void registerCompany(CarRentalCompany crc) {
 		// TODO Auto-generated method stub
-		this.companies.put(crc.getName(), crc);
-
-		try {
-			ICarRentalCompany stub = (ICarRentalCompany) UnicastRemoteObject
-					.exportObject(crc, 0);
-			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind(crc.getName(), stub);
-			System.out.println("Car Rental Company: " + crc.getName() + " bound.");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		this.companies.put(crc.getName(), crc);		
 	}
 
 	@Override
 	public void unregisterCompany(CarRentalCompany crc) {
 		// TODO Auto-generated method stub
 		this.companies.remove(crc);
-
-		try {
-			Registry registry = LocateRegistry.getRegistry();
-			registry.unbind(crc.getName());
-			System.out.println("Car Rental Company: " + crc.getName() + " unbound.");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override

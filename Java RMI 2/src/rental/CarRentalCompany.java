@@ -1,6 +1,6 @@
 package rental;
 
-import java.rmi.RemoteException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany implements ICarRentalCompany {
+public class CarRentalCompany implements Serializable {
 
 	private static final long serialVersionUID = -5594330145422239039L;
 	
@@ -192,7 +192,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	}
 	
 	public List<CarType> getFreeCarTypes(Date from, Date end)
-			throws RemoteException {
+			/*throws RemoteException*/ {
 		return new ArrayList<>(this.getAvailableCarTypes(from, end));
 	}
     
