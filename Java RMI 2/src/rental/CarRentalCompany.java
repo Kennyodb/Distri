@@ -1,6 +1,6 @@
 package rental;
 
-import java.rmi.RemoteException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -13,8 +13,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarRentalCompany implements ICarRentalCompany {
+public class CarRentalCompany implements Serializable {
 
+	private static final long serialVersionUID = -5594330145422239039L;
+	
 	private static Logger logger = Logger.getLogger(CarRentalCompany.class
 			.getName());
 
@@ -189,9 +191,74 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return list;
 	}
 	
-	@Override
 	public List<CarType> getFreeCarTypes(Date from, Date end)
-			throws RemoteException {
+			/*throws RemoteException*/ {
 		return new ArrayList<>(this.getAvailableCarTypes(from, end));
+	}
+    
+    /*************
+     * TO STRING *
+     *************/
+	private String carsAsString()
+	{
+		String toret = "";
+		
+		for(Car c : this.cars)
+			toret += c.toString() + ", ";
+		
+		if(this.cars.size() > 0)
+			toret = toret.substring(0, toret.length() - 2);
+		
+		return toret;
+	}
+	
+	private String carTypesAsString()
+	{
+		String toret = "";
+		
+		for(CarType t : this.getAllCarTypes())
+			toret += t.toString() + ", ";
+		
+		if(this.getAllCarTypes().size() > 0)
+			toret = toret.substring(0, toret.length() - 2);
+		
+		return toret;
+	}
+    
+    @Override
+    public String toString() {
+    	return String.format("Car Rental Company: %s\n\nsupported cartypes\n----------------\n%s\n\navailable cars\n--------------\n%s", 
+    			this.name, this.carTypesAsString(), this.carsAsString());
+    }
+
+    /***************
+     * HASHCODE    *
+     **************/
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+    /***************
+     * EQUALS      *
+     **************/
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CarRentalCompany other = (CarRentalCompany) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 }
