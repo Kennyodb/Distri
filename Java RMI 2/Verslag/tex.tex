@@ -1,0 +1,36 @@
+\documentclass[10pt]{article}
+
+\author{Kenny Op de Beeck, Jonathan Langens}
+\title{Java RMI}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Design overview}
+
+The following is an overview of the core parts and their responsibilities.
+
+\subsection{CarRentalCompany}
+
+A CarRentalCompany contains a collection of cars. It offers methods to check for available cars in a certain period, and for creating, confirming or cancelling quotes for a certain carType.
+
+\subsection{IRentalManager}
+
+IRentalManager is an interface for the bridge between user sessions and the CarRentalCompanies. Implementing classes must offer methods for creating new sessions, for (un)registering carRentalCompanies, and for placing or cancelling quotes at one of the registered companies.
+
+\subsection{Session}
+
+Session is an abstract class representing a user session. It contains a username, a unique ID and a reference to an IRentalManager instance. Subclasses of Session are ReservationSession and ManagerSession. ReservationSession is the session type for a client who can place reservations at the CarRentalCompanies. It keeps a collection of quotes that were created during the session, and offers a method to confirm these quotes. ManagerSession is the session type for a manager, who can register or unregister carRentalCompanies.
+
+\section{Remotely accessible and serializable classes}
+
+Only one class is remotely accessible: the (I)RentalManager. Clients of any type should look up this RentalManager in the RMI registry and ask for a new Reservation- or ManagerSession. Session is therefore Serializable. other Serializable classes are Reservation, CarType and ReservationConstraints. These are all classes that are needed at the client-side, but may be 'just copies' of the instances at the server-side.
+
+\section{Different hosts}
+
+All objects are located on no more than two different hosts: the client and the server. This makes it easy for the client to communicate with the car rental companies, since they only need to look up one object via the RMI registry. However, this also means that all CarRentalCompy instances are located on the same server. Avoiding this problem could be achieved by registering each carRentalCompany on the RMI registry. The central server, which now contains all companies, would then only serve as a name server, containing the names of the registered companies.
+
+
+\end{document}
