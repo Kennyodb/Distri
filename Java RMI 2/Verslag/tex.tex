@@ -1,7 +1,10 @@
-\documentclass[10pt]{article}
+\documentclass[a4paper,10pt]{article}
 
 \author{Kenny Op de Beeck, Jonathan Langens}
 \title{Java RMI}
+
+\usepackage{incgraph,tikz}
+
 
 \begin{document}
 
@@ -38,5 +41,13 @@ It is necessary that, for a specific carRentalCompany, only one quote can be con
 Due to the difference in creating and confirming quotes, it is unlikely that this synchronized method will present itself as a bottleneck. Creation of quotes and requesting of statistics are not synchronized processes, meaning they can be performed by multiple threads simultaneously. Invalid quotes could therefore be created by accident, though they would not compromise the thread-safety, since they're not yet confirmed.\\
 
 In order to ensure a unique ID for every session, it is also necessary to declare the method creating these ID's as synchronized. This is a very small method and is very unlikely to become a bottleneck.
+
+
+\incgraph{class_diagram.jpg}
+
+\incgraph{get_best_clients.jpg}
+
+\incgraph{placing_and_confirming_quotes.jpg}
+
 
 \end{document}
