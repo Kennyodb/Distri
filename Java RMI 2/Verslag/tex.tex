@@ -3,7 +3,6 @@
 \author{Kenny Op de Beeck, Jonathan Langens}
 \title{Java RMI}
 
-
 \begin{document}
 
 \maketitle
@@ -26,11 +25,18 @@ Session is an abstract class representing a user session. It contains a username
 
 \section{Remotely accessible and serializable classes}
 
-Only one class is remotely accessible: the (I)RentalManager. Clients of any type should look up this RentalManager in the RMI registry and ask for a new Reservation- or ManagerSession. Session is therefore Serializable. other Serializable classes are Reservation, CarType and ReservationConstraints. These are all classes that are needed at the client-side, but may be 'just copies' of the instances at the server-side.
+Only one class is remotely accessible: the (I)RentalManager. Clients of any type should look up this RentalManager in the RMI registry and ask for a new Reservation- or ManagerSession. Session is therefore Serializable. other Serializable classes are Reservation, CarType and ReservationConstraints. These are all classes that are needed at the client-side, but might as well be 'just copies' of the instances at the server-side.
 
 \section{Different hosts}
 
 All objects are located on no more than two different hosts: the client and the server. This makes it easy for the client to communicate with the car rental companies, since they only need to look up one object via the RMI registry. However, this also means that all CarRentalCompy instances are located on the same server. Avoiding this problem could be achieved by registering each carRentalCompany on the RMI registry. The central server, which now contains all companies, would then only serve as a name server, containing the names of the registered companies.
 
+\section{Synchronization}
+
+It is necessary that, for a specific carRentalCompany, only one quote can be confirmed at a time. If this were not the case, thread-safety would be compromised: two (or more) reservations for the same car could be placed without resulting in an exception. This thread-safety can be achieved by simply adding a 'synchronized' keyword to the confirmQuote method in CarRentalCompany.\\
+
+Due to the difference in creating and confirming quotes, it is unlikely that this synchronized method will present itself as a bottleneck. Creation of quotes and requesting of statistics are not synchronized processes, meaning they can be performed by multiple threads simultaneously. Invalid quotes could therefore be created by accident, though they would not compromise the thread-safety, since they're not yet confirmed.\\
+
+In order to ensure a unique ID for every session, it is also necessary to declare the method creating these ID's as synchronized. This is a very small method and is very unlikely to become a bottleneck.
 
 \end{document}
