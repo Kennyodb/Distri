@@ -1,5 +1,6 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,12 +9,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.DETACH;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
-public class CarRentalCompany {
+@Entity
+public class CarRentalCompany implements Serializable {
 
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int carRentalCompanyId;
+    
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+    
     private String name;
+    
+    @OneToMany(cascade=ALL)
     private List<Car> cars;
+    
+    @ManyToMany(cascade=DETACH)
     private Set<CarType> carTypes = new HashSet<CarType>();
 
     /***************

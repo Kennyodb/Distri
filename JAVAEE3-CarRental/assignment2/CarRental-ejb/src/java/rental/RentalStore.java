@@ -10,8 +10,13 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 public class RentalStore {
+    
+    @PersistenceContext
+    private static EntityManager em;
 
     private static Map<String, CarRentalCompany> rentals;
 
@@ -38,6 +43,7 @@ public class RentalStore {
             List<Car> cars = loadData(datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             rentals.put(name, company);
+            em.persist(company);
         } catch (NumberFormatException ex) {
             Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, "bad file", ex);
         } catch (IOException ex) {
