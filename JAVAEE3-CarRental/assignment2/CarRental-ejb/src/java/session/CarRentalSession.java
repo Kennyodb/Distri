@@ -33,12 +33,12 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
         List<CarType> availableCarTypes = new LinkedList<CarType>();
-      /*  for(String crc : getAllRentalCompanies()) {
+        for(String crc : getAllRentalCompanies()) {
             for(CarType ct : RentalStore.getRentals().get(crc).getAvailableCarTypes(start, end)) {
                 if(!availableCarTypes.contains(ct) && ct != null)
                     availableCarTypes.add(ct);
             }
-        }*/
+        }
         return availableCarTypes;
     }
 
