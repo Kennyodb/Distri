@@ -1,6 +1,7 @@
 package rental;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +10,11 @@ import javax.persistence.Id;
 @Entity
 public class CarType implements Serializable{
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int carTypeId;
+    
+    @Column(name = "NAME")
     private String name;
     private int nbOfSeats;
     private boolean smokingAllowed;
@@ -35,8 +40,6 @@ public class CarType implements Serializable{
     }
 
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getCarTypeId()
     {
         return this.carTypeId;
@@ -47,24 +50,44 @@ public class CarType implements Serializable{
         this.carTypeId = carTypeId;
     }
     
-    public String getName() {
-    	return name;
+    public String getName()
+    {
+        return this.name;
     }
     
     public int getNbOfSeats() {
         return nbOfSeats;
     }
     
+    public void setNbOfSeats(int nbOfSeats) {
+        this.nbOfSeats = nbOfSeats;
+    }
+    
     public boolean isSmokingAllowed() {
         return smokingAllowed;
+    }
+    
+    public void setIsSmokingAllowed(boolean smokingAllowed)
+    {
+        this.smokingAllowed = smokingAllowed;
     }
 
     public double getRentalPricePerDay() {
         return rentalPricePerDay;
     }
     
+    public void setRentalPricePerDay(double rentalPricePerDay)
+    {
+        this.rentalPricePerDay = rentalPricePerDay;
+    }
+    
     public float getTrunkSpace() {
     	return trunkSpace;
+    }
+    
+    public void setTrunkSpace(float trunkSpace)
+    {
+        this.trunkSpace = trunkSpace;
     }
     
     /*************
@@ -73,7 +96,7 @@ public class CarType implements Serializable{
     
     @Override
     public String toString() {
-    	return String.format("Car type: %s \t[seats: %d, price: %.2f, smoking: %b, trunk: %.0fl]" , 
+    	return String.format("Id: %s Car type: %s \t[seats: %d, price: %.2f, smoking: %b, trunk: %.0fl]" , "" + this.carTypeId,
                 getName(), getNbOfSeats(), getRentalPricePerDay(), isSmokingAllowed(), getTrunkSpace());
     }
 

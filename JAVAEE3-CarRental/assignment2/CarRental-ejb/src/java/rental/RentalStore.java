@@ -7,18 +7,44 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.metamodel.EntityType;
 
+@Stateful
 public class RentalStore {
     
-    @PersistenceContext
+    //@PersistenceContext
     private static EntityManager em;
 
     private static Map<String, CarRentalCompany> rentals;
+    
+    private static EntityManager getEM()
+    {
+        if(RentalStore.em == null)
+        {
+          
+        EntityManagerFactory f = Persistence.createEntityManagerFactory("CarRental-ejbPU");
+        em = f.createEntityManager();
+        System.out.println("EM CREATED **********************************");  
+        
+        
+        Set<EntityType<?>> li = em.getMetamodel().getEntities();
+        System.out.println("%%% number of enities supported " + li.size());
+        for(EntityType<?> et : li)
+        {
+            System.out.println("Entity " + et.getName() + " %%%%%%");
+        }
+        }
+        
+        return RentalStore.em;
+    }
 
     public static CarRentalCompany getRental(String company) throws IllegalArgumentException {
         CarRentalCompany out = RentalStore.getRentals().get(company);
@@ -43,7 +69,8 @@ public class RentalStore {
             List<Car> cars = loadData(datafile);
             CarRentalCompany company = new CarRentalCompany(name, cars);
             rentals.put(name, company);
-            em.persist(company);
+          /* if(company != null)
+                RentalStore.getEM().persist(company);*/
         } catch (NumberFormatException ex) {
             Logger.getLogger(RentalStore.class.getName()).log(Level.SEVERE, "bad file", ex);
         } catch (IOException ex) {

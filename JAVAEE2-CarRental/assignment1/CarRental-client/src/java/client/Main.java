@@ -6,30 +6,20 @@ import java.io.InputStreamReader;
 import javax.ejb.EJB;
 import session.CarRentalSessionRemote;
 import rental.ReservationConstraints;
+import rental.Quote;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import session.ManagerSessionRemote;
 
-public class Main extends AbstractScriptedSimpleTripTest{
+public class Main {
     
     @EJB
     static CarRentalSessionRemote session;
-    
-    @EJB
-    static ManagerSessionRemote managerSession;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         System.out.println("found rental companies: "+session.getAllRentalCompanies());
-        /*
-       System.out.println(":::::::::::::::/n:::Starting to run/n::::::::::::::::::::");
-        try {
-            (new Main("simpleTrips")).run();
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
         
         Main.displayMainMenu();
         String input = Main.readLine();
@@ -38,9 +28,9 @@ public class Main extends AbstractScriptedSimpleTripTest{
             int choice = Integer.parseInt(input);
             switch(choice)
             {
-                case 1:Main.addReservationConstraintMenu(); break;
-                case 2:Main.displayCurrentQuotesMenu(); break;
-                case 3:Main.confirmQuotesMenu();break;
+                case 1:Main.addReservationConstraint(); break;
+                case 2:Main.displayCurrentQuotes(); break;
+                case 3:Main.confirmQuotes();break;
                     
                 default: break;
             }
@@ -51,30 +41,27 @@ public class Main extends AbstractScriptedSimpleTripTest{
         System.out.println("Terminating session...");
     }
     
-    private static void addReservationConstraintMenu()
+    private static void addReservationConstraint()
     {
         // for now a bogus reservation constraint
         ReservationConstraints constraint = new ReservationConstraints(new Date(), new Date(), "bogusCarType");
         System.out.println("press any key to try to register quote : " + constraint);
         Main.readLine();
         
-        String result = session.createQuote(constraint.getStartDate().toString(), 
-                            constraint.getEndDate().toString(),
-                            constraint.getCarType());
-        
-        System.out.println("Quote registered as:\n" + result + "\n");
+        if(session.createQuote(constraint) != null)
+            System.out.println("Quote registered");
     }
     
-    private static void displayCurrentQuotesMenu()
+    private static void displayCurrentQuotes()
     {
         System.out.println("The current quotes in the system are:");
-        for(String q : session.getCurrentQuotes())
+        for(Quote q : session.getCurrentQuotes())
         {
             System.out.println(q);
         }
     }
     
-    private static void confirmQuotesMenu()
+    private static void confirmQuotes()
     {
         System.out.println("Press <ENTER> to confirm all current quotes.");
         Main.readLine();
@@ -100,66 +87,5 @@ public class Main extends AbstractScriptedSimpleTripTest{
         }
         
         return line;
-    }
-
-    public Main(String scriptFile) {
-        super(scriptFile);
-    }
-    
-// TODO REPLACE
-    @Override
-    protected Object getNewReservationSession(String name) throws Exception {
-        return session;
-    }
-
-// TODO REPLACE
-    @Override
-    protected Object getNewManagerSession(String name, String carRentalName) throws Exception {
-        return managerSession;
-    }
-
-    @Override
-    protected void checkForAvailableCarTypes(Object session, Date start, Date end) throws Exception {
-        ManagerSessionRemote mSession;
-        try {
-        mSession = (ManagerSessionRemote)session;
-        for(String s:mSession.getSupportedCarTypes())System.out.println();
-        }catch(Exception e){e.printStackTrace();}
-    }
-
-    @Override
-    protected void addQuoteToSession(Object session, String name, Date start, Date end, String carType, String carRentalName) throws Exception {
-        
-        try{
-        CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
-        crSession.createQuote(start.toString(), end.toString(), carType);
-        }catch(Exception e){e.printStackTrace();}
-        
-    }
-
-    @Override
-    protected void confirmQuotes(Object session, String name) throws Exception {
-        try {
-        CarRentalSessionRemote crSession = (CarRentalSessionRemote) session;
-        crSession.confirmQuotes();
-        }catch(Exception e){e.printStackTrace();}
-    }
-
-    @Override
-    protected int getNumberOfReservationsBy(Object ms, String clientName) throws Exception {
-        try{
-        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
-        return Integer.parseInt(mSession.getNumberOfReservationsForClient(clientName));
-        }catch(Exception e){e.printStackTrace();}
-        return 0;
-    }
-
-    @Override
-    protected int getNumberOfReservationsForCarType(Object ms, String carRentalName, String carType) throws Exception {
-        try {
-        ManagerSessionRemote mSession = (ManagerSessionRemote)session;
-        return Integer.parseInt(mSession.getNumberOfReservationsForCarType(carType));
-        }catch(Exception e){e.printStackTrace();}
-        return 0;
     }
 }

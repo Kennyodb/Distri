@@ -5,23 +5,26 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.CascadeType.DETACH;
+import static javax.persistence.CascadeType.PERSIST;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Car implements Serializable {
 
-   
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     
+    @OneToMany
     private Set<Reservation> reservations;
     
+    @ManyToOne
     private CarType type;
 
     /***************
@@ -33,17 +36,14 @@ public class Car implements Serializable {
     }
     
     public Car(int uid, CarType type) {
-    	this.id = uid;
-        //this.type = type;
+    	//this.id = uid;
+        this.type = type;
         this.reservations = new HashSet<Reservation>();
     }
 
     /******
      * ID *
      ******/
-   
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
     	return id;
     }
@@ -55,9 +55,9 @@ public class Car implements Serializable {
     
     /************
      * CAR TYPE *
+     * @return 
      ************/
     // TODO MappedBy toevoegen zie slides
-    @OneToOne(cascade=DETACH)
     public CarType getType() {
         return type;
     }
@@ -93,7 +93,6 @@ public class Car implements Serializable {
     }
 
     // TODO MappedBy toevoegen zie slides
-    @OneToMany(cascade=ALL)
     public Set<Reservation> getReservations() {
         return reservations;
     }   
