@@ -16,37 +16,53 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
 public class CarRentalCompany implements Serializable {
 
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int carRentalCompanyId;
     
-    private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+  //  private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
     
     private String name;
     
-    @OneToMany(cascade=ALL)
     private List<Car> cars;
     
-    @ManyToMany(cascade=DETACH)
     private Set<CarType> carTypes = new HashSet<CarType>();
 
     /***************
      * CONSTRUCTOR *
      ***************/
+    public CarRentalCompany()
+    {
+        
+    }
     
     public CarRentalCompany(String name, List<Car> cars) {
-        logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
+  //      logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
         setName(name);
         this.cars = cars;
         for (Car car : cars) {
             carTypes.add(car.getType());
         }
+    }
+    
+    /********
+     * ID   *
+     */
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public int getCarRentalCompanyId()
+    {
+        return this.carRentalCompanyId;
+    }
+    public void setCarRentalCompanyId(int carRentalCompanyId)
+    {
+        this.carRentalCompanyId = carRentalCompanyId;
     }
 
     /********
@@ -65,6 +81,17 @@ public class CarRentalCompany implements Serializable {
      * CAR TYPES *
      *************/
     
+    @ManyToMany(cascade=DETACH)
+    public Set<CarType> getCarTypes()
+    {
+        return this.carTypes;
+    }
+    
+    public void setCarTypes(Set<CarType> carTypes)
+    {
+        this.carTypes = carTypes;
+    }
+    
     public Collection<CarType> getAllTypes() {
         return carTypes;
     }
@@ -78,7 +105,7 @@ public class CarRentalCompany implements Serializable {
     }
 
     public boolean isAvailable(String carTypeName, Date start, Date end) {
-        logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
+     //   logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
         return getAvailableCarTypes(start, end).contains(getType(carTypeName));
     }
 
@@ -95,6 +122,16 @@ public class CarRentalCompany implements Serializable {
     /*********
      * CARS *
      *********/
+    @OneToMany(cascade=ALL)
+    public List<Car> getCars()
+    {
+        return this.cars;
+    }
+    
+    public void setCars(List<Car> cars)
+    {
+        this.cars = cars;
+    }
     
     public Car getCar(int uid) {
         for (Car car : cars) {
@@ -141,8 +178,8 @@ public class CarRentalCompany implements Serializable {
     
     public Quote createQuote(ReservationConstraints constraints, String guest)
             throws ReservationException {
-        logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
-                new Object[]{name, guest, constraints.toString()});
+    //    logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
+      //          new Object[]{name, guest, constraints.toString()});
 
         CarType type = getType(constraints.getCarType());
 
@@ -163,7 +200,7 @@ public class CarRentalCompany implements Serializable {
     }
 
     public Reservation confirmQuote(Quote quote) throws ReservationException {
-        logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
+     //   logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
         List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
         if (availableCars.isEmpty()) {
             throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
@@ -177,12 +214,12 @@ public class CarRentalCompany implements Serializable {
     }
 
     public void cancelReservation(Reservation res) {
-        logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
+     //   logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
         getCar(res.getCarId()).removeReservation(res);
     }
     
     public Set<Reservation> getReservationsBy(String renter) {
-        logger.log(Level.INFO, "<{0}> Retrieving reservations by {1}", new Object[]{name, renter});
+    //    logger.log(Level.INFO, "<{0}> Retrieving reservations by {1}", new Object[]{name, renter});
         Set<Reservation> out = new HashSet<Reservation>();
         for(Car c : cars) {
             for(Reservation r : c.getReservations()) {

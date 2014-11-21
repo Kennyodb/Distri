@@ -12,23 +12,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Car implements Serializable {
 
    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @ManyToOne(cascade=DETACH)
-    private CarType type;
-    @OneToMany(cascade=ALL)
+    
     private Set<Reservation> reservations;
+    
+    private CarType type;
 
     /***************
      * CONSTRUCTOR *
      ***************/
-    protected Car()
+    public Car()
     {
         
     }
@@ -42,17 +41,30 @@ public class Car implements Serializable {
     /******
      * ID *
      ******/
-    
+   
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
     	return id;
+    }
+    
+    public void setId(int id)
+    {
+        this.id = id;
     }
     
     /************
      * CAR TYPE *
      ************/
     // TODO MappedBy toevoegen zie slides
+    @OneToOne(cascade=DETACH)
     public CarType getType() {
         return type;
+    }
+    
+    public void setType(CarType type)
+    {
+        this.type = type;
     }
 
     /****************
@@ -81,9 +93,15 @@ public class Car implements Serializable {
     }
 
     // TODO MappedBy toevoegen zie slides
+    @OneToMany(cascade=ALL)
     public Set<Reservation> getReservations() {
         return reservations;
     }   
+    
+    public void setReservations(Set<Reservation> reservations)
+    {
+        this.reservations = reservations;
+    }
     
     // TODO FIX
     @Override

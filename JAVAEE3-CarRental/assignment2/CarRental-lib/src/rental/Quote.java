@@ -15,8 +15,8 @@ import static javax.persistence.TemporalType.DATE;
 @Inheritance(strategy=JOINED)
 public class Quote implements Serializable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int reservationId;
   
     @Temporal(DATE)
@@ -32,6 +32,10 @@ public class Quote implements Serializable {
     /***************
      * CONSTRUCTOR *
      ***************/
+    public Quote()
+    {
+        
+    }
 
     public Quote(String carRenter, Date start, Date end, String rentalCompany, String carType, double rentalPrice) {
         this.carRenter = carRenter;
@@ -40,6 +44,16 @@ public class Quote implements Serializable {
         this.rentalCompany = rentalCompany;
         this.carType = carType;
         this.rentalPrice = rentalPrice;
+    }
+    
+    public int getReservationId()
+    {
+        return this.reservationId;
+    }
+    
+    public void setReservationId(int reservationId)
+    {
+        this.reservationId = reservationId;
     }
 
     public Date getStartDate() {

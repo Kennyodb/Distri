@@ -9,8 +9,6 @@ import javax.persistence.Id;
 @Entity
 public class CarType implements Serializable{
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int carTypeId;
     private String name;
     private int nbOfSeats;
@@ -23,6 +21,11 @@ public class CarType implements Serializable{
      * CONSTRUCTOR *
      ***************/
     
+    public CarType()
+    {
+        
+    }
+    
     public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
         this.name = name;
         this.nbOfSeats = nbOfSeats;
@@ -31,6 +34,19 @@ public class CarType implements Serializable{
         this.smokingAllowed = smokingAllowed;
     }
 
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public int getCarTypeId()
+    {
+        return this.carTypeId;
+    }
+    
+    public void setCarTypeId(int carTypeId)
+    {
+        this.carTypeId = carTypeId;
+    }
+    
     public String getName() {
     	return name;
     }
