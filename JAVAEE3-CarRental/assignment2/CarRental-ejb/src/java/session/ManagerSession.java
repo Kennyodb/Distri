@@ -58,8 +58,16 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public CarType getMostPopularCarTypeIn(String company) {
-        em.createQuery("", null);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Query query = em.createQuery(
+                "SELECT res.carType, COUNT(res.carType) " +
+                "FROM Reservation res " +
+                "WHERE res.rentalCompany = :company " +
+                "GROUP BY res.carType " +
+                "ORDER BY COUNT(res.carType) DESC");
+        query.setParameter("company", company);
+        query.setMaxResults(1);
+        return (CarType) ((Object[]) query.getSingleResult())[0];
+        
     }
 
     @Override
