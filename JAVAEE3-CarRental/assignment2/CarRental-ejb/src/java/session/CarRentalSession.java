@@ -38,12 +38,13 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public Set<String> getAllRentalCompanies() {
        // return new HashSet<String>(RentalStore.getRentals().keySet());
-       HashSet<String> toreturn = new HashSet<String>();
-       for(Object c : em.createQuery("SELECT crc FROM CarRentalCompany crc").getResultList())
+       HashSet<String> result = new HashSet<String>();
+       for(CarRentalCompany crc : em.createQuery("SELECT crc FROM CarRentalCompany crc",
+               CarRentalCompany.class).getResultList())
        {
-           toreturn.add(((CarRentalCompany)c).getName());
+           result.add(crc.getName());
        }
-       return toreturn;
+       return result;
     }
     
     @Override

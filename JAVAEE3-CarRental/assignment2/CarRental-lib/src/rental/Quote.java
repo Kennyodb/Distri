@@ -8,17 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import static javax.persistence.InheritanceType.JOINED;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 
-@Entity
-@Inheritance(strategy=JOINED)
+@MappedSuperclass
 public class Quote implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int reservationId;
-  
     @Temporal(DATE)
     private Date startDate;
     @Temporal(DATE)
@@ -46,16 +42,6 @@ public class Quote implements Serializable {
         this.rentalPrice = rentalPrice;
     }
     
-    public int getReservationId()
-    {
-        return this.reservationId;
-    }
-    
-    public void setReservationId(int reservationId)
-    {
-        this.reservationId = reservationId;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
