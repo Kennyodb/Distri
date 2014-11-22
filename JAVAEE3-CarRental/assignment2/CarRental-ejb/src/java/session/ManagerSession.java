@@ -43,7 +43,7 @@ public class ManagerSession implements ManagerSessionRemote {
     public int getNumberOfReservations(String company, String carType) {
         Query query = em.createQuery("SELECT res FROM Reservation res "
                 + "WHERE res.carType = :carType AND res.rentalCompany = :company");
-        query.setParameter("cartype", carType);
+        query.setParameter("carType", carType);
         query.setParameter("company", company);
         return query.getResultList().size();
     }
