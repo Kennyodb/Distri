@@ -7,13 +7,16 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Resource;
 import javax.ejb.Stateful;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
+import static javax.ejb.TransactionAttributeType.REQUIRES_NEW;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.UserTransaction;
 import rental.Car;
 import rental.CarRentalCompany;
 import rental.CarType;
@@ -23,6 +26,7 @@ import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 
+//@TransactionAttribute(NOT_SUPPORTED)
 @Stateful
 public class CarRentalSession implements CarRentalSessionRemote {
 
@@ -52,9 +56,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
         Query qCars = em.createQuery("select car from Car car", Car.class);
         List<Car> carlist = qCars.getResultList();
         
-        System.out.println(":::::::::::getavailablecartype started::::::::::::");
-        System.out.println("number of cars found " + carlist.size());
-        
         // get a list with all reservations that fall between the selected period
         Query qReservations = em.createQuery("select reservation from" + 
                             " Reservation reservation where " + 
@@ -65,8 +66,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
         qReservations.setParameter("start", start);
         qReservations.setParameter("end", end);
         List<Reservation> reservationlist = qReservations.getResultList();
-        
-        System.out.println("::::reservations loaded:::::::::::: nr of res: " + reservationlist.size());
         
         List<Car> tCarList = new ArrayList();
         for(Reservation r : reservationlist)
@@ -81,9 +80,6 @@ public class CarRentalSession implements CarRentalSessionRemote {
         }
         for(Car c : tCarList)
             carlist.remove(c);
-        
-        System.out.println(":::::removed cars that were already reserved:::::::::");
-        System.out.println(" we have " + carlist.size() + " cars left");
         
         // now carlist contains only available cars
         List<CarType> list = new ArrayList();
@@ -143,13 +139,15 @@ public class CarRentalSession implements CarRentalSessionRemote {
         return quotes;
     }
 
+    //@TransactionAttribute(REQUIRES_NEW)
     @Override
     //@TransactionManagement(TransactionManagementType.CONTAINER) 
+    //@Transactional
     public List<Reservation> confirmQuotes() throws ReservationException {
         List<Reservation> done = new LinkedList<Reservation>();
         //EntityTransaction trans = em.getTransaction();
-        //trans.begin();
         try {
+        //userTrans.begin();
             for (Quote quote : quotes) {
                 //done.add(RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote));
                 Query crcQ = em.createQuery("select c from CarRentalCompany c where c.name like :cname", CarRentalCompany.class);
@@ -162,7 +160,7 @@ public class CarRentalSession implements CarRentalSessionRemote {
                 em.persist(crc.confirmQuote(quote));
                 //done.add(crc.confirmQuote(quote));
             }
-            //trans.commit();
+            //userTrans.commit();
         } catch (Exception e) {
             for(Reservation r:done)
                 RentalStore.getRental(r.getRentalCompany()).cancelReservation(r);
