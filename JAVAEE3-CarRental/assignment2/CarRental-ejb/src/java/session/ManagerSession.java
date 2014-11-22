@@ -1,6 +1,7 @@
 package session;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -63,11 +64,16 @@ public class ManagerSession implements ManagerSessionRemote {
                 "FROM Reservation res " +
                 "WHERE res.rentalCompany = :company " +
                 "GROUP BY res.carType " +
-                "ORDER BY COUNT(res.carType) DESC");
+                "ORDER BY COUNT(res.carType) DESC", String.class);
         query.setParameter("company", company);
         query.setMaxResults(1);
-        return (CarType) ((Object[]) query.getSingleResult())[0];
+        List<String> ctnamelist = query.getResultList();
+        String ctname = ctnamelist.get(0);
+        Query ctQuery = em.createQuery("Select ct from CarType ct where ct.name like :ctname",
+                        CarType.class);
+        ctQuery.setParameter("ctname", ctname);
         
+        return ((CarType) ctQuery.getResultList().get(0));
     }
 
     @Override
