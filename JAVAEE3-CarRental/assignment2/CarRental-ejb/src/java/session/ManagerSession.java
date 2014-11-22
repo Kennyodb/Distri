@@ -56,7 +56,7 @@ public class ManagerSession implements ManagerSessionRemote {
         return query.getResultList().size();
     }
 
-    @Override
+    @Override   
     public CarType getMostPopularCarTypeIn(String company) {
         Query query = em.createQuery(
                 "SELECT res.carType, COUNT(res.carType) " +
@@ -72,9 +72,24 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public Set<String> getBestClients() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Set<String> result = new HashSet<String>();
+        for(String company : this.getAllRentalCompanies()) {
+            result.add(this.getBestClient(company));
+        }
+        return result;
     }
     
+    public String getBestClient(String company) {
+        Query query = em.createQuery(
+                "SELECT r.carRenter, COUNT(r.carRenter) " +
+                "FROM Reservation r " +
+                "WHERE r.rentalCompany = :company " +
+                "GROUP BY r.carRenter " +
+                "ORDER BY COUNT(r.carRenter) DESC");
+        query.setParameter("company", company);
+        query.setMaxResults(1);
+        return (String) ((Object[]) query.getSingleResult())[0];
+    }
 
     /*  @Override
     public Set<Integer> getCarIds(String company, String type) {
