@@ -16,7 +16,7 @@ import static javax.persistence.TemporalType.DATE;
 public class Quote implements Serializable {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int reservationId;
   
     @Temporal(DATE)

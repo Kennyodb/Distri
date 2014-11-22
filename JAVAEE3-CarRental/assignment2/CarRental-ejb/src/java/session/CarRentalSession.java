@@ -1,5 +1,6 @@
 package session;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -7,7 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateful;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import rental.Car;
@@ -44,50 +48,50 @@ public class CarRentalSession implements CarRentalSessionRemote {
     
     @Override
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        /*List<CarType> availableCarTypes = new LinkedList<CarType>();
-        for(String crc : getAllRentalCompanies()) {
-            for(Object c :  em.createQuery("SELECT crc FROM CarRentalCompany crc").getResultList())
+        // get a list with all cars
+        Query qCars = em.createQuery("select car from Car car", Car.class);
+        List<Car> carlist = qCars.getResultList();
+        
+        System.out.println(":::::::::::getavailablecartype started::::::::::::");
+        System.out.println("number of cars found " + carlist.size());
+        
+        // get a list with all reservations that fall between the selected period
+        Query qReservations = em.createQuery("select reservation from" + 
+                            " Reservation reservation where " + 
+                            "((:start >= reservation.startDate and :start <= reservation.endDate)" +
+                            " or " +
+                            "(:end >= reservation.startDate and :end <= reservation.endDate))",
+                             Reservation.class);
+        qReservations.setParameter("start", start);
+        qReservations.setParameter("end", end);
+        List<Reservation> reservationlist = qReservations.getResultList();
+        
+        System.out.println("::::reservations loaded:::::::::::: nr of res: " + reservationlist.size());
+        
+        List<Car> tCarList = new ArrayList();
+        for(Reservation r : reservationlist)
+        {
+            for(Car c : carlist)
             {
-               for(CarType ct : ((CarRentalCompany)c).getAvailableCarTypes(start, end)) 
-               {
-                if(!availableCarTypes.contains(ct) && ct != null)
-                    availableCarTypes.add(ct);
-               }
+                if(r.getCarId() == c.getId())
+                {
+                    tCarList.add(c);
+                }
             }
         }
-        return availableCarTypes;*/
+        for(Car c : tCarList)
+            carlist.remove(c);
         
-       /* Query q = em.createQuery("select cartype from CarType where exists ("
-                + "select distinct car.carTypeId from \n" +
-"Car  car left join Reservation reservation \n" +
-"inner join Quote quote on reservation.reservationId = quote.reservationId\n" +
-"on car.id = reservation.carId \n" +
-"where not exists\n" +
-"( select reservationquote from\n" +
-"Car left join Reservation \n" +
-"inner join Quote on Reservation.reservationId = Quote.reservationId\n" +
-"on Car.id = Reservation.carId \n" +
-"where (:startDate > Quote.startDate and :startDate < Quote.endDate)\n" +
-"or (:endDate > Quote.startDate and :endDate < Quote.endDate)\n" +
-"))", CarType.class);*/
-       /* Query q = em.createQuery("select cartype from CarType cartype where exists ("
-                + "select distinct car.type.carTypeId from \n" +
-"Car  car left join Reservation reservation \n" +
-"on car.id = reservation.carId \n" +
-"where not exists\n" +
-"( select reservation from\n" +
-"Car  car left join Reservation reservation \n" +
-"on car.id = reservation.carId \n" +
-"where (:startDate > reservation.startDate and :startDate < reservation.endDate)\n" +
-"or (:endDate > reservation.startDate and :endDate < reservation.endDate)\n" +
-"))", CarType.class);*/
-         Query q = em.createQuery("select cartype from CarType cartype where exists ("
-                + "select car from \n" +
-"Car  car" +
-")", CarType.class);
-       // q.setParameter("startDate", start);
-       // q.setParameter("endDate", end);
-        List<CarType> list = q.getResultList();
+        System.out.println(":::::removed cars that were already reserved:::::::::");
+        System.out.println(" we have " + carlist.size() + " cars left");
+        
+        // now carlist contains only available cars
+        List<CarType> list = new ArrayList();
+        for(Car c : carlist)
+        {
+            if(list.contains(c.getType()) == false)
+                list.add(c.getType());
+        }
         return list;
     }
     
@@ -100,30 +104,15 @@ public class CarRentalSession implements CarRentalSessionRemote {
         {
             for(Car car : c.getCars())
             {
-                System.out.println("Car " + car + " has id " + car.getId());
-                System.out.println("Car.cartypeid = " + car.getType().getCarTypeId() + " cartype address " + car.getType());
                 if(em.contains(car.getType()) == false)
                 { em.persist(car.getType());}
-                else
-                    System.out.println("cartype already in DB");
                 if(em.contains(car) == false)
                 { em.persist(car);}
-                else
-                    System.out.println("car already in DB");
             }
             em.persist(c);
             em.flush();
            
         }
-        
-        System.out.println("PERSISTED");
-        
-        List<CarRentalCompany> li = em.createQuery("select a from CarRentalCompany a").getResultList();
-        
-        System.out.println("number of CRCS: " + li.size() + "%%%%%%%%%%%%%%");
-        
-        for(CarRentalCompany cc : li)
-            System.out.println(cc.toString());
         
         CarRentalSession.persisted = true;
     }
@@ -133,7 +122,15 @@ public class CarRentalSession implements CarRentalSessionRemote {
         this.persistRentalStore();
         
         try {
-            Quote out = RentalStore.getRental(company).createQuote(constraints, renter);
+            Query crcQuery = em.createQuery("select c from CarRentalCompany c where c.name like :cname", CarRentalCompany.class);
+            crcQuery.setParameter("cname", company);
+            List<CarRentalCompany> crclist = crcQuery.getResultList();
+            if(crclist.size() == 0)
+                throw new ReservationException("CarRentalCompany " + company + " not found");
+            CarRentalCompany crc = crclist.get(0);
+            
+            //Quote out = RentalStore.getRental(company).createQuote(constraints, renter);
+            Quote out = crc.createQuote(constraints, renter);
             quotes.add(out);
             return out;
         } catch(Exception e) {
@@ -147,12 +144,25 @@ public class CarRentalSession implements CarRentalSessionRemote {
     }
 
     @Override
+    //@TransactionManagement(TransactionManagementType.CONTAINER) 
     public List<Reservation> confirmQuotes() throws ReservationException {
         List<Reservation> done = new LinkedList<Reservation>();
+        //EntityTransaction trans = em.getTransaction();
+        //trans.begin();
         try {
             for (Quote quote : quotes) {
-                done.add(RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote));
+                //done.add(RentalStore.getRental(quote.getRentalCompany()).confirmQuote(quote));
+                Query crcQ = em.createQuery("select c from CarRentalCompany c where c.name like :cname", CarRentalCompany.class);
+                crcQ.setParameter("cname", quote.getRentalCompany());
+                List<CarRentalCompany> crclist = crcQ.getResultList();
+                if(crclist.isEmpty())
+                    throw new ReservationException("Confirm quotes failed, cannot find carrentalcompany "+
+                                quote.getRentalCompany());
+                CarRentalCompany crc = crclist.get(0);
+                em.persist(crc.confirmQuote(quote));
+                //done.add(crc.confirmQuote(quote));
             }
+            //trans.commit();
         } catch (Exception e) {
             for(Reservation r:done)
                 RentalStore.getRental(r.getRentalCompany()).cancelReservation(r);
