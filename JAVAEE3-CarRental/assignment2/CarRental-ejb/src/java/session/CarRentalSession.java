@@ -180,6 +180,16 @@ public class CarRentalSession implements CarRentalSessionRemote {
     @Override
     public String getCheapestCarType(Date start, Date end) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return "";
+        
+        List<CarType> types = this.getAvailableCarTypes(start, end);
+        if(types.isEmpty())
+            throw new IllegalArgumentException("no cartypes found");
+        CarType cheapest = types.get(0);
+        
+        for(CarType t : types)
+            if(t.getRentalPricePerDay()<cheapest.getRentalPricePerDay())
+                cheapest = t;
+        
+        return cheapest.getName();
     }
 }
