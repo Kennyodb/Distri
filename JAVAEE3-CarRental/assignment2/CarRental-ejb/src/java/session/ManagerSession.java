@@ -1,5 +1,6 @@
 package session;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import rental.CarRentalCompany;
 import rental.CarType;
+import rental.Reservation;
 
 @Stateless
 public class ManagerSession implements ManagerSessionRemote {
@@ -59,21 +61,40 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override   
     public CarType getMostPopularCarTypeIn(String company) {
-        Query query = em.createQuery(
-                "SELECT res.carType, COUNT(res.carType) " +
-                "FROM Reservation res " +
-                "WHERE res.rentalCompany = :company " +
-                "GROUP BY res.carType " +
-                "ORDER BY COUNT(res.carType) DESC", String.class);
-        query.setParameter("company", company);
-        query.setMaxResults(1);
-        List<String> ctnamelist = query.getResultList();
-        String ctname = ctnamelist.get(0);
-        Query ctQuery = em.createQuery("Select ct from CarType ct where ct.name like :ctname",
-                        CarType.class);
-        ctQuery.setParameter("ctname", ctname);
         
-        return ((CarType) ctQuery.getResultList().get(0));
+        Query resQuery = em.createQuery("select res from Reservation res where" +
+                " res.rentalCompany like :cname", Reservation.class);
+        resQuery.setParameter("cname", company);
+        List<Reservation> resList = resQuery.getResultList();
+        List<String> types = new ArrayList();
+        for(Reservation r : resList)
+        {
+            if(!types.contains(r.getCarType()))
+                types.add(r.getCarType());
+        }
+        int mpCount = 0;
+        String mp = "";
+        for(String type : types)
+        {
+            int currentCount = 0;
+            for(Reservation r : resList)
+            {
+                if(r.getCarType().equals(type))
+                    currentCount++;
+            }
+            if(currentCount > mpCount)
+            {
+                mpCount = currentCount;
+                mp = type;
+            }
+        }
+        
+        Query ctQuery = em.createQuery("select ct from CarType ct where ct.name like :ctname", CarType.class);
+        ctQuery.setParameter("ctname", mp);
+        List<CarType> ctlist = ctQuery.getResultList();
+        if(ctlist.isEmpty())
+            throw new IllegalArgumentException("Cartype " + mp + " cannot be found");
+        return ctlist.get(0);
     }
 
     @Override
@@ -82,19 +103,34 @@ public class ManagerSession implements ManagerSessionRemote {
         for(String company : this.getAllRentalCompanies()) {
             result.add(this.getBestClient(company));
         }
+        
         return result;
     }
     
     public String getBestClient(String company) {
-        Query query = em.createQuery(
-                "SELECT r.carRenter, COUNT(r.carRenter) " +
-                "FROM Reservation r " +
-                "WHERE r.rentalCompany = :company " +
-                "GROUP BY r.carRenter " +
-                "ORDER BY COUNT(r.carRenter) DESC");
-        query.setParameter("company", company);
-        query.setMaxResults(1);
-        return (String) ((Object[]) query.getSingleResult())[0];
+        Query bestClientQuery = em.createQuery(
+                "SELECT r.carRenter AS name, COUNT(r) AS total FROM Reservation r"+
+                        " WHERE r.rentalCompany like :cname " +
+                        " GROUP BY name ORDER BY total ASC");
+        bestClientQuery.setParameter("cname", company);
+        List<Object[]> results = bestClientQuery.getResultList();
+        int bcCount = 0;
+        String bestClient = "";
+        if(results.isEmpty())
+            throw new IllegalArgumentException("no clients found");
+        
+        for (Object[] result : results) 
+        {
+            String name = (String) result[0];
+            int count = ((Number) result[1]).intValue();
+            if(count > bcCount)
+            {
+                bcCount = count;
+                bestClient = name;
+            }
+        }
+        
+        return bestClient;
     }
 
     /*  @Override
