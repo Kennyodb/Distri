@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import ds.gae.entities.Car;
@@ -39,10 +41,11 @@ public class CarRentalModel {
 	 */
 	public Set<String> getCarTypesNames(String crcName) {
 		// TODO add implementation
-		Query query = EMF.get().createEntityManager()
+		/*Query query = EMF.get().createEntityManager()
 				.createQuery("select ct.name from CarType",
 								String.class);
-		return new HashSet<String>(query.getResultList());
+		return new HashSet<String>(query.getResultList());*/
+		return null;
 	}
 
     /**
@@ -51,10 +54,13 @@ public class CarRentalModel {
      * @return	the list of car rental companies
      */
     public Collection<String> getAllRentalCompanyNames() {
-		Query query = EMF.get().createEntityManager()
+		/*Query query = EMF.get().createEntityManager()
 				.createQuery("select crc.name from CarRentalCompany",
 								String.class);
-		return new HashSet<String>(query.getResultList());
+		return new HashSet<String>(query.getResultList());*/
+
+		// FIXME use persistence instead
+    	return CRCS.keySet();
     }
 	
 	/**
@@ -84,6 +90,33 @@ public class CarRentalModel {
         }
         
         return out;
+        
+        /*
+    	Quote out = null;
+    	EntityManager em = EMF.get().createEntityManager();
+    	CarRentalCompany crc = loadCarRentalCompany(em, company);
+        if (crc != null) {
+            out = crc.createQuote(constraints, renterName);
+        } else {
+        	throw new ReservationException("CarRentalCompany not found.");    	
+        }
+        
+        return out;    */ 
+    }
+    
+    private CarRentalCompany loadCarRentalCompany(EntityManager em, String name)
+    {
+    	Query query = em.createQuery("select crc from CarRentalCompany where crc.name like :crcname",
+								CarRentalCompany.class);
+    	query.setParameter("crcname", name);
+    	CarRentalCompany crc = null;
+    	if(query.getResultList().size() > 0)
+    	{
+    		crc = (CarRentalCompany) query.getResultList().get(0);
+    		crc.loadCarTypes();
+    		return crc;
+    	}
+    	return null;
     }
     
 	/**
@@ -96,8 +129,12 @@ public class CarRentalModel {
 	 * 			Confirmation of given quote failed.	
 	 */
 	public void confirmQuote(Quote q) throws ReservationException {
-		// FIXME: use persistence instead
+		/*
+    	EntityManager em = EMF.get().createEntityManager();
+    	CarRentalCompany crc = loadCarRentalCompany(em, q.getRentalCompany());
+        crc.confirmQuote(q);*/
 
+		// FIXME use peristence instead
 		CarRentalCompany crc = CRCS.get(q.getRentalCompany());
         crc.confirmQuote(q);
 	}
@@ -113,8 +150,42 @@ public class CarRentalModel {
 	 * 			One of the quotes cannot be confirmed. 
 	 * 			Therefore none of the given quotes is confirmed.
 	 */
-    public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {    	
-		// TODO add implementation
+    public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {
+    	/*EntityManager em = EMF.get().createEntityManager();
+    	EntityTransaction tx = em.getTransaction();
+    	tx.begin();
+    	for(Quote q : quotes)
+    	{
+        	CarRentalCompany crc = loadCarRentalCompany(em, q.getRentalCompany());
+        	try
+        	{
+        		crc.confirmQuote(q);
+        		em.persist(crc);
+        	}
+        	catch(ReservationException r)
+        	{
+        		r.printStackTrace();
+        		tx.rollback();
+        		em.close();
+        	}
+    	}
+    	tx.commit();
+
+    	List<Reservation> result = new ArrayList();
+    	
+    	for(Quote q : quotes)
+    	{
+        	Query query = em.createQuery("select r from reservation where r.carType = :ct and r.startDate = :sd", Reservation.class);
+    		query.setParameter("ct", q.getCarType());
+    		query.setParameter("sd", q.getStartDate());
+    		result.add((Reservation) query.getResultList().get(0));
+    	}
+    	
+    	em.close();
+    	
+    	return result;*/
+
+		// FIXME: use persistence instead
     	return null;
     }
 	

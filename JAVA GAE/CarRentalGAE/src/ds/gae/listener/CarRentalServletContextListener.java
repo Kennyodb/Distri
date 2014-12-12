@@ -22,6 +22,7 @@ import ds.gae.CarRentalModel;
 import ds.gae.EMF;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
+import ds.gae.entities.CarType;
 
 public class CarRentalServletContextListener implements ServletContextListener {
 
@@ -38,10 +39,11 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	
 	private boolean isDummyDataAvailable() {
 		// If the Hertz car rental company is in the datastore, we assume the dummy data is available
-		Query query = EMF.get().createEntityManager()
-						.createQuery("select crc from CarRentalCompany where crc.name = :crcname");
+		//  FIXME generates the following error: FROM clause of query has class ds.gae.entities.CarRentalCompany but no alias
+		/*Query query = EMF.get().createEntityManager()
+						.createQuery("select crc from CarRentalCompany where crc.name like :crcname");
 		query.setParameter("crcname", "Hertz");
-		return query.getResultList().size() > 0;
+		return query.getResultList().size() > 0;*/return false;
 
 	}
 	
@@ -58,8 +60,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
             CarRentalCompany company = new CarRentalCompany(name, cars);
             
     		// FIXME: use persistence instead
-            //CarRentalModel.get().CRCS.put(name, company);
-            EntityManager em = EMF.get().createEntityManager();
+            CarRentalModel.get().CRCS.put(name, company);
+            /*EntityManager em = EMF.get().createEntityManager();
             try
             {
             	em.persist(company);
@@ -67,7 +69,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
             finally
             {
             	em.close();
-            }
+            }*/
             
 
         } catch (NumberFormatException ex) {
@@ -79,7 +81,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	
 	public static Set<Car> loadData(String name, String datafile) throws NumberFormatException, IOException {
 		
-		/*Set<Car> cars = new HashSet<Car>();
+		Set<Car> cars = new HashSet<Car>();
 		int carId = 1;
 
 		//open file from jar
@@ -104,7 +106,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
 			for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
 				cars.add(new Car(carId++, type));
 			}
-		}*/
+		}
+		/*
 		Set<Car> cars = null;
 		
 		Query query = EMF.get().createEntityManager()
@@ -117,7 +120,7 @@ public class CarRentalServletContextListener implements ServletContextListener {
 			CarRentalCompany company = rlist.get(0);
 			cars = company.getCars();
 			
-		}
+		}*/
 		return cars;
 	}
 

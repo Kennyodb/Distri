@@ -43,6 +43,14 @@ public class CarRentalCompany {
 		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
 		setName(name);
 		this.cars = cars;
+		this.loadCarTypes();
+	}
+	
+	/********
+	 * loading the car types
+	 */
+	public void loadCarTypes()
+	{
 		for(Car car:cars)
 			carTypes.put(car.getType().getName(), car.getType());
 	}
