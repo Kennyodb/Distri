@@ -3,6 +3,7 @@ package ds.gae.listener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -10,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -17,6 +19,8 @@ import ds.gae.EMF;
 import ds.gae.entities.Car;
 import ds.gae.entities.CarRentalCompany;
 import ds.gae.entities.CarType;
+import ds.gae.entities.Quote;
+import ds.gae.entities.Reservation;
 
 public class CarRentalServletContextListener implements ServletContextListener {
 
@@ -41,7 +45,34 @@ public class CarRentalServletContextListener implements ServletContextListener {
 	private void addDummyData() {
 		loadRental("Hertz", "hertz.csv");
 		loadRental("Dockx", "dockx.csv");
+		
+		//TODO Delete everything below this notification
+		Quote quote = new Quote("Kenny", new Date(), new Date(), "Hertz",
+			"Compact", 1000);
+		log("quote created");
+		
+		EntityManager em = EMF.get().createEntityManager();
+		CarRentalCompany crc = em.find(CarRentalCompany.class, "Hertz");
+		CarType type = em.find(CarType.class, "Compact");
+		TypedQuery<Car> qCar = EMF.get().createEntityManager().createQuery(
+				"SELECT c FROM CarRentalCompany crc, Car c WHERE crc = :crcparam AND c.type = :ct",
+				Car.class);
+		qCar.setParameter("crcparam", crc);
+		qCar.setParameter("ct", type);
+		Car car = qCar.getResultList().get(0);
+		
+		log("Found car: " + car.getType());
+		Reservation res = new Reservation(quote, car);
+		car.addReservation(res);
+		log("Reservation placed");
 	}
+	
+	private void log(String s) {
+		Logger.getLogger(CarRentalServletContextListener.class.getName()).log(
+				Level.INFO, "********* " + s);
+	}
+	
+	//Until HERE
 
 	private void loadRental(String name, String datafile) {
 		Logger.getLogger(CarRentalServletContextListener.class.getName()).log(
@@ -51,7 +82,6 @@ public class CarRentalServletContextListener implements ServletContextListener {
 
 			Set<Car> cars = loadData(name, datafile);
 			CarRentalCompany company = new CarRentalCompany(name, cars);
-			System.out.println("HOPSAKEE");
 
 			EntityManager em = EMF.get().createEntityManager();
 			try {

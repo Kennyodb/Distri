@@ -13,7 +13,7 @@ public class Reservation extends Quote {
 	 * CONSTRUCTOR *
 	 ***************/
 
-    Reservation(Quote quote, Car car) {
+    public Reservation(Quote quote, Car car) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     			quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
         this.car = car;

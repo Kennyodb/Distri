@@ -66,7 +66,7 @@ public class Car {
 	 ****************/
 
 	public Set<Reservation> getReservations() {
-		return reservations;
+		return new HashSet<>(reservations);
 	}
 
 	public boolean isAvailable(Date start, Date end) {
