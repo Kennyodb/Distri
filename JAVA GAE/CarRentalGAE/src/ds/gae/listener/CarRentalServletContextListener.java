@@ -53,18 +53,22 @@ public class CarRentalServletContextListener implements ServletContextListener {
 		
 		EntityManager em = EMF.get().createEntityManager();
 		CarRentalCompany crc = em.find(CarRentalCompany.class, "Hertz");
-		CarType type = em.find(CarType.class, "Compact");
+		/*CarType type = em.find(CarType.class, "Compact");
 		TypedQuery<Car> qCar = EMF.get().createEntityManager().createQuery(
 				"SELECT c FROM CarRentalCompany crc, Car c WHERE crc = :crcparam AND c.type = :ct",
 				Car.class);
 		qCar.setParameter("crcparam", crc);
-		qCar.setParameter("ct", type);
-		Car car = qCar.getResultList().get(0);
-		
-		log("Found car: " + car.getType());
-		Reservation res = new Reservation(quote, car);
-		car.addReservation(res);
-		log("Reservation placed");
+		qCar.setParameter("ct", type);*/
+		for(Car car : crc.getCars())
+		{
+			if(car.getType().getName().equalsIgnoreCase("compact"))
+			{
+				log("Found car: " + car.getType());
+				Reservation res = new Reservation(quote, car);
+				car.addReservation(res);
+				log("Reservation placed");
+			}
+		}		
 	}
 	
 	private void log(String s) {
