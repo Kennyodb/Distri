@@ -1,35 +1,30 @@
 package ds.gae.entities;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Reservation extends Quote {
    
 
-    private int carId;
+    private Car car;
     
     /***************
 	 * CONSTRUCTOR *
 	 ***************/
 
-    Reservation(Quote quote, int carId) {
+    Reservation(Quote quote, Car car) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     			quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
-        this.carId = carId;
+        this.car = car;
     }
     
     /******
      * ID *
      ******/
     
-    public int getCarId() {
-    	return carId;
+    public Car getCar() {
+    	return car;
     }
     
     /*************
@@ -39,14 +34,14 @@ public class Reservation extends Quote {
     @Override
     public String toString() {
         return String.format("Reservation for %s from %s to %s at %s\nCar type: %s\tCar: %s\nTotal price: %.2f", 
-                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), getCarId(), getRentalPrice());
+                getCarRenter(), getStartDate(), getEndDate(), getRentalCompany(), getCarType(), getCar(), getRentalPrice());
     }
     
     @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + carId;
+		result = prime * result + car.hashCode();
 		return result;
 	}
 
@@ -55,7 +50,7 @@ public class Reservation extends Quote {
 		if (!super.equals(obj))
 			return false;
 		Reservation other = (Reservation) obj;
-		if (carId != other.carId)
+		if (car != other.car)
 			return false;
 		return true;
 	}

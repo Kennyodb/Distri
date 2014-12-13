@@ -11,7 +11,7 @@ import javax.persistence.Id;
 public class ReservationConstraints {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private Date startDate;
     private Date endDate;
     private String carType;

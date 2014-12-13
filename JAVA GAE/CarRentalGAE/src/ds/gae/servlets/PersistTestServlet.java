@@ -3,17 +3,13 @@ package ds.gae.servlets;
 import java.io.IOException;
 import java.text.ParseException;
 
-import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ds.gae.CarRentalModel;
-import ds.gae.EMF;
 import ds.gae.ReservationException;
-import ds.gae.entities.Car;
-import ds.gae.entities.CarType;
 import ds.gae.entities.Quote;
 import ds.gae.entities.ReservationConstraints;
 import ds.gae.view.JSPSite;
